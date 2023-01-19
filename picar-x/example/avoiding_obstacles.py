@@ -8,7 +8,7 @@ def main():
         px.forward(30)
         while True:
             distance = px.ultrasonic.read()
-            print("distance: ",distance)
+            print("distance: ", distance)
             if distance > 0 and distance < 300:
                 if distance < 25:
                     px.set_dir_servo_angle(-35)
@@ -20,4 +20,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -6,9 +6,12 @@ Luke Strohbehn
 from typing import Any
 import math
 import os
+import time
+
 
 class _Basic_class(object):
     _class_name = "_Basic_class"
+
     def __init__(self) -> None:
         pass
 
@@ -22,9 +25,8 @@ class _Basic_class(object):
 
     def run_command(self, cmd):
         import subprocess
-        p = subprocess.Popen(
-            cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
-        )
+
+        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         result = p.stdout.read().decode("utf-8")
         status = p.poll()
         return status, result
@@ -39,61 +41,61 @@ class Pin(_Basic_class):
     }
 
     _dict_1 = {
-        "D0":  17,
-        "D1":  18,
-        "D2":  27,
-        "D3":  22,
-        "D4":  23,
-        "D5":  24,
-        "D6":  25,
-        "D7":  4,
-        "D8":  5,
-        "D9":  6,
+        "D0": 17,
+        "D1": 18,
+        "D2": 27,
+        "D3": 22,
+        "D4": 23,
+        "D5": 24,
+        "D6": 25,
+        "D7": 4,
+        "D8": 5,
+        "D9": 6,
         "D10": 12,
         "D11": 13,
         "D12": 19,
         "D13": 16,
         "D14": 26,
         "D15": 20,
-        "D16": 21, 
-        "SW":  19,
-        "USER": 19,        
+        "D16": 21,
+        "SW": 19,
+        "USER": 19,
         "LED": 26,
         "BOARD_TYPE": 12,
         "RST": 16,
         "BLEINT": 13,
         "BLERST": 20,
         "MCURST": 21,
-
     }
 
     _dict_2 = {
-        "D0":  17,
-        "D1":   4, # Changed
-        "D2":  27,
-        "D3":  22,
-        "D4":  23,
-        "D5":  24,
-        "D6":  25, # Removed
-        "D7":   4, # Removed
-        "D8":   5, # Removed
-        "D9":   6,
+        "D0": 17,
+        "D1": 4,  # Changed
+        "D2": 27,
+        "D3": 22,
+        "D4": 23,
+        "D5": 24,
+        "D6": 25,  # Removed
+        "D7": 4,  # Removed
+        "D8": 5,  # Removed
+        "D9": 6,
         "D10": 12,
         "D11": 13,
         "D12": 19,
         "D13": 16,
         "D14": 26,
         "D15": 20,
-        "D16": 21,     
-        "SW":  25, # Changed
+        "D16": 21,
+        "SW": 25,  # Changed
         "USER": 25,
         "LED": 26,
         "BOARD_TYPE": 12,
         "RST": 16,
         "BLEINT": 13,
         "BLERST": 20,
-        "MCURST":  5, # Changed
+        "MCURST": 5,  # Changed
     }
+
     def __init__(self, *value) -> None:
         super().__init__()
 
@@ -140,7 +142,8 @@ class Pin(_Basic_class):
                 self._dict = _dict
             else:
                 self._error(
-                    'argument should be a pin dictionary like {"my pin": ezblock.Pin.cpu.GPIO17}, not %s' % _dict)
+                    'argument should be a pin dictionary like {"my pin": ezblock.Pin.cpu.GPIO17}, not %s' % _dict
+                )
 
     def __call__(self, value) -> Any:
         return self.value(value)
@@ -158,7 +161,7 @@ class Pin(_Basic_class):
 
     def off(self):
         return self.value(0)
-        
+
     def high(self):
         self.on()
 
@@ -200,88 +203,90 @@ class fileDB(object):
 
     A file based database, read and write arguements in the specific file.
     """
-    def __init__(self, db: str, mode:str = None, owner:str = None):
+
+    def __init__(self, db: str, mode: str = None, owner: str = None):
         self.db = db
         if self.db != None:
             self.file_check_create(db, mode, owner)
         else:
             raise ValueError("db: Missing file path parameter")
-        
-    def file_check_create(self, file_path:str, mode:str=None, owner:str=None):
-        dir = file_path.rsplit('/',1)[0]
+
+    def file_check_create(self, file_path: str, mode: str = None, owner: str = None):
+        dir = file_path.rsplit("/", 1)[0]
         try:
             if os.path.exists(file_path):
                 if not os.path.isfile(file_path):
-                    print('Could not create file, there is a folder with the same name')
+                    print("Could not create file, there is a folder with the same name")
                     return
             else:
                 if os.path.exists(dir):
                     if not os.path.isdir(dir):
-                        print('Could not create directory, there is a file with the same name')
+                        print("Could not create directory, there is a file with the same name")
                         return
                 else:
-                    os.makedirs(file_path.rsplit('/',1)[0], mode=0o754)
+                    os.makedirs(file_path.rsplit("/", 1)[0], mode=0o754)
                     time.sleep(0.001)
 
-                with open(file_path, 'w') as f:
+                with open(file_path, "w") as f:
                     f.write("# robot-hat config and calibration value of robots\n\n")
 
             if mode != None:
-                os.popen('sudo chmod %s %s'%(mode, file_path))
+                os.popen("sudo chmod %s %s" % (mode, file_path))
             if owner != None:
-                os.popen('sudo chown -R %s:%s %s'%(owner, owner, file_path.rsplit('/',1)[0]))		
+                os.popen("sudo chown -R %s:%s %s" % (owner, owner, file_path.rsplit("/", 1)[0]))
         except Exception as e:
-            raise(e) 
+            raise (e)
 
     def get(self, name, default_value=None):
         """Get value by data's name. Default value is for the arguemants do not exist"""
         try:
-            conf = open(self.db,'r')
-            lines=conf.readlines()
+            conf = open(self.db, "r")
+            lines = conf.readlines()
             conf.close()
-            file_len=len(lines)-1
+            file_len = len(lines) - 1
             flag = False
             # Find the arguement and set the value
             for i in range(file_len):
-                if lines[i][0] != '#':
-                    if lines[i].split('=')[0].strip() == name:
-                        value = lines[i].split('=')[1].replace(' ', '').strip()
+                if lines[i][0] != "#":
+                    if lines[i].split("=")[0].strip() == name:
+                        value = lines[i].split("=")[1].replace(" ", "").strip()
                         flag = True
             if flag:
                 return value
             else:
                 return default_value
         except FileNotFoundError:
-            conf = open(self.db,'w')
+            conf = open(self.db, "w")
             conf.write("")
             conf.close()
             return default_value
-        except :
+        except:
             return default_value
 
     def set(self, name, value):
         """Set value by data's name. Or create one if the arguement does not exist"""
 
         # Read the file
-        conf = open(self.db,'r')
-        lines=conf.readlines()
+        conf = open(self.db, "r")
+        lines = conf.readlines()
         conf.close()
-        file_len=len(lines)-1
+        file_len = len(lines) - 1
         flag = False
         # Find the arguement and set the value
         for i in range(file_len):
-            if lines[i][0] != '#':
-                if lines[i].split('=')[0].strip() == name:
-                    lines[i] = '%s = %s\n' % (name, value)
+            if lines[i][0] != "#":
+                if lines[i].split("=")[0].strip() == name:
+                    lines[i] = "%s = %s\n" % (name, value)
                     flag = True
         # If arguement does not exist, create one
         if not flag:
-            lines.append('%s = %s\n\n' % (name, value))
+            lines.append("%s = %s\n\n" % (name, value))
 
         # Save the file
-        conf = open(self.db,'w')
+        conf = open(self.db, "w")
         conf.writelines(lines)
         conf.close()
+
 
 def _retry_wrapper(func):
     def wrapper(self, *arg, **kwargs):
@@ -293,17 +298,19 @@ def _retry_wrapper(func):
                 continue
         else:
             return False
+
     return wrapper
-    
+
+
 class I2C(_Basic_class):
     def __init__(self, *args, **kargs) -> None:
         super().__init__()
         pass
 
     @_retry_wrapper
-    def _i2c_write_byte(self, addr, data):   # i2C 写系列函数
+    def _i2c_write_byte(self, addr, data):  # i2C 写系列函数
         pass
-            
+
     @_retry_wrapper
     def _i2c_write_byte_data(self, addr, reg, data):
         pass
@@ -317,7 +324,7 @@ class I2C(_Basic_class):
         pass
 
     @_retry_wrapper
-    def _i2c_read_byte(self, addr):   # i2C 读系列函数
+    def _i2c_read_byte(self, addr):  # i2C 读系列函数
         pass
 
     @_retry_wrapper
@@ -328,20 +335,20 @@ class I2C(_Basic_class):
     def is_ready(self, addr):
         pass
 
-    def scan(self):                             # 查看有哪些i2c设备
+    def scan(self):  # 查看有哪些i2c设备
         pass
 
-    def send(self, send, addr, timeout=0):                      # 发送数据，addr为从机地址，send为数据
+    def send(self, send, addr, timeout=0):  # 发送数据，addr为从机地址，send为数据
         pass
 
-    def recv(self, recv, addr=0x00, timeout=0):     # 接收数据
+    def recv(self, recv, addr=0x00, timeout=0):  # 接收数据
         pass
 
-    def mem_write(self, data, addr, memaddr, timeout=5000, addr_size=8): #memaddr match to chn
+    def mem_write(self, data, addr, memaddr, timeout=5000, addr_size=8):  # memaddr match to chn
         pass
 
-    @_retry_wrapper 
-    def mem_read(self, data, addr, memaddr, timeout=5000, addr_size=8):     # 读取数据
+    @_retry_wrapper
+    def mem_read(self, data, addr, memaddr, timeout=5000, addr_size=8):  # 读取数据
         pass
 
     def readfrom_mem_into(self, addr, memaddr, buf):
@@ -350,11 +357,9 @@ class I2C(_Basic_class):
     def writeto_mem(self, addr, memaddr, data):
         pass
 
-timer = [
-    {
-        "arr": 0
-    }
-] * 4
+
+timer = [{"arr": 0}] * 4
+
 
 class PWM(I2C):
     REG_CHN = 0x20
@@ -365,6 +370,7 @@ class PWM(I2C):
     ADDR = 0x14
 
     CLOCK = 72000000
+
     def __init__(self, channel, debug="critical") -> None:
         super().__init__()
         if isinstance(channel, str):
@@ -384,7 +390,7 @@ class PWM(I2C):
         self.debug = debug
         # self._debug("PWM address: {:02X}".format(self.ADDR))
         self.channel = channel
-        self.timer = int(channel/4)
+        self.timer = int(channel / 4)
         self._pulse_width = 0
         self._freq = 50
         self.freq(50)
@@ -402,16 +408,16 @@ class PWM(I2C):
             # accuracy list
             result_acy = []
             # middle value for equal arr prescaler
-            st = int(math.sqrt(self.CLOCK/self._freq))
+            st = int(math.sqrt(self.CLOCK / self._freq))
             # get -5 value as start
             st -= 5
             # prevent negetive value
             if st <= 0:
                 st = 1
-            for psc in range(st,st+10):
-                arr = int(self.CLOCK/self._freq/psc)
+            for psc in range(st, st + 10):
+                arr = int(self.CLOCK / self._freq / psc)
                 result_ap.append([psc, arr])
-                result_acy.append(abs(self._freq-self.CLOCK/psc/arr))
+                result_acy.append(abs(self._freq - self.CLOCK / psc / arr))
             i = result_acy.index(min(result_acy))
             psc = result_ap[i][0]
             arr = result_ap[i][1]
@@ -453,32 +459,33 @@ class PWM(I2C):
             # print(temp)
             pulse_width = temp * timer[self.timer]["arr"]
             self.pulse_width(pulse_width)
-            
+
 
 class ADC(I2C):
-    ADDR=0x14                   # 扩展板的地址为0x14
+    ADDR = 0x14  # 扩展板的地址为0x14
 
-    def __init__(self, chn):    # 参数，通道数，树莓派扩展板上有8个adc通道分别为"A0, A1, A2, A3, A4, A5, A6, A7"
+    def __init__(self, chn):  # 参数，通道数，树莓派扩展板上有8个adc通道分别为"A0, A1, A2, A3, A4, A5, A6, A7"
         super().__init__()
         if isinstance(chn, str):
-            if chn.startswith("A"):     # 判断穿境来的参数是否为A开头，如果是，取A后面的数字出来
+            if chn.startswith("A"):  # 判断穿境来的参数是否为A开头，如果是，取A后面的数字出来
                 chn = int(chn[1:])
             else:
                 raise ValueError("ADC channel should be between [A0, A7], not {0}".format(chn))
-        if chn < 0 or chn > 7:          # 判断取出来的数字是否在0~7的范围内
-            self._error('Incorrect channel range')
+        if chn < 0 or chn > 7:  # 判断取出来的数字是否在0~7的范围内
+            self._error("Incorrect channel range")
         chn = 7 - chn
-        self.chn = chn | 0x10           # 给从机地址
+        self.chn = chn | 0x10  # 给从机地址
         self.reg = 0x40 + self.chn
-        
+
     def read(self):
         value = 0b10000001
         return value
 
     def read_voltage(self):
-        return self.read*3.3/4095
+        return self.read * 3.3 / 4095
 
-class Ultrasonic():
+
+class Ultrasonic:
     def __init__(self, trig, echo, timeout=0.02):
         self.trig = trig
         self.echo = echo
@@ -493,11 +500,11 @@ class Ultrasonic():
         pulse_end = 0
         pulse_start = 0
         timeout_start = time.time()
-        while self.echo.value()==0:
+        while self.echo.value() == 0:
             pulse_start = time.time()
             if pulse_start - timeout_start > self.timeout:
                 return -1
-        while self.echo.value()==1:
+        while self.echo.value() == 1:
             pulse_end = time.time()
             if pulse_end - timeout_start > self.timeout:
                 return -1
@@ -520,19 +527,19 @@ class Grayscale_Module(object):
         self.chn_2 = ADC(pin2)
         self.reference = reference
 
-    def get_line_status(self,fl_list):
+    def get_line_status(self, fl_list):
 
         if fl_list[0] > self.reference and fl_list[1] > self.reference and fl_list[2] > self.reference:
-            return 'stop'
-            
+            return "stop"
+
         elif fl_list[1] <= self.reference:
-            return 'forward'
-        
+            return "forward"
+
         elif fl_list[0] <= self.reference:
-            return 'right'
+            return "right"
 
         elif fl_list[2] <= self.reference:
-            return 'left'
+            return "left"
 
     def get_grayscale_data(self):
         adc_value_list = []
