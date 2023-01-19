@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 """
 sim_robot_hat.py
 Luke Strohbehn
