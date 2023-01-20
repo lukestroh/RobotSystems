@@ -120,6 +120,9 @@ class Picarx(object):
         angle_value = value + self.dir_cal_value
         self.dir_servo_pin.angle(angle_value)
 
+    def get_dir_current_angle(self):
+        return self.dir_current_angle
+
     def camera_servo1_angle_calibration(self, value):
         self.cam_cal_value_1 = value
         self.config_flie.set("picarx_cam_servo1", "%s" % value)

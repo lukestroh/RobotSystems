@@ -1,0 +1,3 @@
+logdecorator==2.4
+-e git+https://lukestroh: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@github.com/lukestroh/RobotSystems.git@f87bf37ea72521196c24f897cb863fd4842efaec#egg=picarx&subdirectory=picar-x
+readchar==4.1.0.dev1

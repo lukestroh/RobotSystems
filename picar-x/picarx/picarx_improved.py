@@ -17,6 +17,7 @@ except ImportError:
 
 import os
 import time
+import math as m
 
 logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%H:%M:%S")
@@ -50,7 +51,9 @@ class Picarx(object):
         ultrasonic_pins: list = ["D2", "D3"],
         config: str = config_file,
     ):
-
+        # Car dimensions
+        self.LENGTH_WHEELBASE: float = 9.36625  # cm 3 + 11/16 in
+        self.WIDTH_WHEELBASE: float = 11.43  # cm 4.5 in
         # config_flie
         self.config_flie = fileDB(config, 774, User)
         # servos init
@@ -164,16 +167,21 @@ class Picarx(object):
             # if abs_current_angle >= 0:
             if abs_current_angle > 40:
                 abs_current_angle = 40
-            if (current_angle / abs_current_angle) > 0:
-                self.set_motor_speed(1, -1 * speed)
-                self.set_motor_speed(2, speed)
-            else:
-                self.set_motor_speed(1, -1 * speed)
+            try:
+                if (current_angle / abs_current_angle) > 0:
+                    self.set_motor_speed(1, -speed)
+                    self.set_motor_speed(2, self.turning_motor_speed(speed))
+                else:
+                    self.set_motor_speed(1, -self.turning_motor_speed(speed))
+                    self.set_motor_speed(2, speed)
+            except ZeroDivisionError:
+                self.set_motor_speed(1, -speed)
                 self.set_motor_speed(2, speed)
         else:
             self.set_motor_speed(1, -1 * speed)
             self.set_motor_speed(2, speed)
 
+    @log_on_error(logging.DEBUG, "Error in forward motion.")
     def forward(self, speed):
         current_angle = self.dir_current_angle
         if current_angle != 0:
@@ -181,17 +189,37 @@ class Picarx(object):
             # if abs_current_angle >= 0:
             if abs_current_angle > 40:
                 abs_current_angle = 40
-            if (current_angle / abs_current_angle) > 0:
-                self.set_motor_speed(1, 1 * speed)
-                self.set_motor_speed(2, -speed)
-                # print("current_speed: %s %s"%(1*speed * power_scale, -speed))
-            else:
+
+            # if (current_angle / abs_current_angle) > 0:
+            #     self.set_motor_speed(1, 1 * speed)
+            #     self.set_motor_speed(2, -speed)
+            #     # print("current_speed: %s %s"%(1*speed * power_scale, -speed))
+            # else:
+            #     self.set_motor_speed(1, speed)
+            #     self.set_motor_speed(2, -1 * speed)
+            #     # print("current_speed: %s %s"%(speed, -1*speed * power_scale))
+            try:
+                if (current_angle / abs_current_angle) > 0:
+                    self.set_motor_speed(1, self.turning_motor_speed(speed))
+                    self.set_motor_speed(2, -speed)
+                else:
+                    self.set_motor_speed(1, speed)
+                    self.set_motor_speed(2, -self.turning_motor_speed(speed))
+            except ZeroDivisionError:
                 self.set_motor_speed(1, speed)
-                self.set_motor_speed(2, -1 * speed)
-                # print("current_speed: %s %s"%(speed, -1*speed * power_scale))
+                self.set_motor_speed(2, -speed)
         else:
             self.set_motor_speed(1, speed)
             self.set_motor_speed(2, -1 * speed)
+
+    def turning_motor_speed(self, v_1, theta):
+        v_2 = (
+            (self.LENGTH_WHEELBASE * m.cot(theta))
+            / (self.LENGTH_WHEELBASE * m.cot(theta) + self.LENGTH_WHEELBASE)
+            * v_1
+        )
+        return v_2
+
 
     @log_on_end(logging.DEBUG, "PicarX motors stopped.")
     def stop(self):
