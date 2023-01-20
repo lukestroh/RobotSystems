@@ -8,8 +8,9 @@ import picarx.picarx_improved as pcx
 
 # import picarx.picarx_improved
 import time
+import atexit
 
-SPEED = 20
+SPEED = 100
 ANGLE = 30
 
 
@@ -18,11 +19,23 @@ def main():
 
     px.set_dir_servo_angle(ANGLE)
 
-    while True:
+    for i in range(1000):
+        try:
+            px.forward(SPEED)
+            time.sleep(0.001)
+        except KeyboardInterrupt:
+            break
+    for i in range(1000):
+        px.set_dir_servo_angle(-ANGLE)
+        try:
+            px.forward(SPEED)
+            time.sleep(0.001)
+        except KeyboardInterrupt:
+            break
+    return px
     
-        px.forward(SPEED)
-        time.sleep(0.001)
 
 
 if __name__ == "__main__":
-    main()
+    px = main()
+    atexit.register(px.stop)

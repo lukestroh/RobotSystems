@@ -5,9 +5,9 @@ import atexit
 
 try:
     from robot_hat import *
-    from robot_hat import __reset_mcu__
+    from robot_hat.utils import reset_mcu
 
-    __reset_mcu__()
+    reset_mcu()
     time.sleep(0.01)
 except (ImportError, ModuleNotFoundError):
     print(
@@ -172,21 +172,22 @@ class Picarx(object):
                 abs_current_angle = 40
             try:
                 if (current_angle / abs_current_angle) > 0:
-                    self.set_motor_speed(1, -speed)
+                    self.set_motor_speed(1, speed)
                     self.set_motor_speed(2, self.turning_motor_speed(speed, current_angle))
                 else:
-                    self.set_motor_speed(1, -self.turning_motor_speed(speed, current_angle))
+                    self.set_motor_speed(1, self.turning_motor_speed(speed, current_angle))
                     self.set_motor_speed(2, speed)
             except ZeroDivisionError:
-                self.set_motor_speed(1, -speed)
+                self.set_motor_speed(1, speed)
                 self.set_motor_speed(2, speed)
         else:
-            self.set_motor_speed(1, -1 * speed)
+            self.set_motor_speed(1, 1 * speed)
             self.set_motor_speed(2, speed)
 
     @log_on_error(logging.DEBUG, "Error in forward motion.")
     def forward(self, speed):
         current_angle = self.dir_current_angle
+        speed = -speed
         if current_angle != 0:
             abs_current_angle = abs(current_angle)
             # if abs_current_angle >= 0:
@@ -202,18 +203,19 @@ class Picarx(object):
             #     self.set_motor_speed(2, -1 * speed)
             #     # print("current_speed: %s %s"%(speed, -1*speed * power_scale))
             try:
+                logging.debug(f"{speed}, {self.turning_motor_speed(speed, current_angle)}")
                 if (current_angle / abs_current_angle) > 0:
                     self.set_motor_speed(1, self.turning_motor_speed(speed, current_angle))
-                    self.set_motor_speed(2, -speed)
+                    self.set_motor_speed(2, speed)
                 else:
-                    self.set_motor_speed(1, speed)
-                    self.set_motor_speed(2, -self.turning_motor_speed(speed, current_angle))
+                    self.set_motor_speed(1, -speed)
+                    self.set_motor_speed(2, self.turning_motor_speed(speed, current_angle))
             except ZeroDivisionError:
                 self.set_motor_speed(1, speed)
-                self.set_motor_speed(2, -speed)
+                self.set_motor_speed(2, speed)
         else:
             self.set_motor_speed(1, speed)
-            self.set_motor_speed(2, -1 * speed)
+            self.set_motor_speed(2, 1 * speed)
 
     def turning_motor_speed(self, v_1, theta):
         v_2 = (
