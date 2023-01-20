@@ -220,7 +220,7 @@ class Picarx(object):
     def turning_motor_speed(self, v_1, theta):
         v_2 = (
             (self.LENGTH_WHEELBASE * 1/m.tan(theta))
-            / (self.LENGTH_WHEELBASE * 1/m.tan(theta) + self.LENGTH_WHEELBASE)
+            / (self.LENGTH_WHEELBASE * 1/m.tan(theta) + self.WIDTH_WHEELBASE)
             * v_1
         )
         return v_2
