@@ -4,7 +4,7 @@ black:
 
 .PHONY: flake8
 flake8:
-	flake8 picar-x --count --show-source --statistics
+	flake8 ./picar-x --count --show-source --statistics
 
 .PHONY: format
 format:
