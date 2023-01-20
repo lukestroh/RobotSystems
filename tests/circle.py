@@ -3,7 +3,10 @@
 circle.py
 Luke Strohbehn
 """
-from ..picarx_improved import Picarx
+import picarx.picarx_improved as pcx
+
+
+# import picarx.picarx_improved
 import time
 
 SPEED = 20
@@ -11,13 +14,12 @@ ANGLE = 30
 
 
 def main():
-    px = Picarx()
+    px = pcx.Picarx()
 
-    px.set_dir_servo_angle(self, ANGLE)
-    px.set
+    px.set_dir_servo_angle(ANGLE)
 
     while True:
-        px.get_dir_current_angle()
+    
         px.forward(SPEED)
         time.sleep(0.001)
 

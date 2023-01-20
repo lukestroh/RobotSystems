@@ -9,11 +9,11 @@ try:
 
     __reset_mcu__()
     time.sleep(0.01)
-except ImportError:
+except (ImportError, ModuleNotFoundError):
     print(
         "This computer does not appear to be a PiCar-X system (robot_hat is not present). Shadowing hardware calls with substitute functions."
     )
-    from sim_robot_hat import *
+    from .sim_robot_hat import *
 
 import os
 import time
@@ -140,6 +140,9 @@ class Picarx(object):
         angle_value = value + self.dir_cal_value
         self.dir_servo_pin.angle(angle_value)
 
+    def get_dir_current_angle(self):
+        return self.dir_current_angle
+
     def camera_servo1_angle_calibration(self, value):
         self.cam_cal_value_1 = value
         self.config_flie.set("picarx_cam_servo1", "%s" % value)
@@ -170,9 +173,9 @@ class Picarx(object):
             try:
                 if (current_angle / abs_current_angle) > 0:
                     self.set_motor_speed(1, -speed)
-                    self.set_motor_speed(2, self.turning_motor_speed(speed))
+                    self.set_motor_speed(2, self.turning_motor_speed(speed, current_angle))
                 else:
-                    self.set_motor_speed(1, -self.turning_motor_speed(speed))
+                    self.set_motor_speed(1, -self.turning_motor_speed(speed, current_angle))
                     self.set_motor_speed(2, speed)
             except ZeroDivisionError:
                 self.set_motor_speed(1, -speed)
@@ -200,11 +203,11 @@ class Picarx(object):
             #     # print("current_speed: %s %s"%(speed, -1*speed * power_scale))
             try:
                 if (current_angle / abs_current_angle) > 0:
-                    self.set_motor_speed(1, self.turning_motor_speed(speed))
+                    self.set_motor_speed(1, self.turning_motor_speed(speed, current_angle))
                     self.set_motor_speed(2, -speed)
                 else:
                     self.set_motor_speed(1, speed)
-                    self.set_motor_speed(2, -self.turning_motor_speed(speed))
+                    self.set_motor_speed(2, -self.turning_motor_speed(speed, current_angle))
             except ZeroDivisionError:
                 self.set_motor_speed(1, speed)
                 self.set_motor_speed(2, -speed)
@@ -214,8 +217,8 @@ class Picarx(object):
 
     def turning_motor_speed(self, v_1, theta):
         v_2 = (
-            (self.LENGTH_WHEELBASE * m.cot(theta))
-            / (self.LENGTH_WHEELBASE * m.cot(theta) + self.LENGTH_WHEELBASE)
+            (self.LENGTH_WHEELBASE * 1/m.tan(theta))
+            / (self.LENGTH_WHEELBASE * 1/m.tan(theta) + self.LENGTH_WHEELBASE)
             * v_1
         )
         return v_2
