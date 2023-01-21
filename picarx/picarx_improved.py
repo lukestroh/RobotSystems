@@ -171,17 +171,17 @@ class Picarx(object):
             if abs_current_angle > 40:
                 abs_current_angle = 40
             try:
-                if (current_angle / abs_current_angle) > 0:
-                    self.set_motor_speed(1, speed)
+                if (current_angle / abs_current_angle) < 0:
+                    self.set_motor_speed(1, -speed)
                     self.set_motor_speed(2, self.turning_motor_speed(speed, current_angle))
                 else:
                     self.set_motor_speed(1, self.turning_motor_speed(speed, current_angle))
                     self.set_motor_speed(2, speed)
             except ZeroDivisionError:
-                self.set_motor_speed(1, speed)
+                self.set_motor_speed(1, -speed)
                 self.set_motor_speed(2, speed)
         else:
-            self.set_motor_speed(1, 1 * speed)
+            self.set_motor_speed(1, -1 * speed)
             self.set_motor_speed(2, speed)
 
     @log_on_error(logging.DEBUG, "Error in forward motion.")
@@ -209,18 +209,19 @@ class Picarx(object):
                     self.set_motor_speed(2, speed)
                 else:
                     self.set_motor_speed(1, -speed)
-                    self.set_motor_speed(2, self.turning_motor_speed(speed, current_angle))
+                    self.set_motor_speed(2, -self.turning_motor_speed(speed, current_angle))
             except ZeroDivisionError:
-                self.set_motor_speed(1, speed)
+                self.set_motor_speed(1, -speed)
                 self.set_motor_speed(2, speed)
         else:
-            self.set_motor_speed(1, speed)
+            self.set_motor_speed(1, -speed)
             self.set_motor_speed(2, 1 * speed)
 
+    @log_on_error(logging.DEBUG, "Error with the turning motor speed")
     def turning_motor_speed(self, v_1, theta):
         v_2 = (
-            (self.LENGTH_WHEELBASE * 1/m.tan(theta))
-            / (self.LENGTH_WHEELBASE * 1/m.tan(theta) + self.WIDTH_WHEELBASE)
+            (self.WIDTH_WHEELBASE/2 + self.LENGTH_WHEELBASE * 1/m.tan(theta))
+            / (self.LENGTH_WHEELBASE * 1/m.tan(theta) - self.WIDTH_WHEELBASE/2)
             * v_1
         )
         return v_2
