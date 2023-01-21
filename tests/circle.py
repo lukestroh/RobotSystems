@@ -11,9 +11,9 @@ import time
 import atexit
 
 SPEED = 20
-ANGLE = 30
+ANGLE = 20
 
-RANGE = 200
+RANGE = 1000
 
 
 def main():
