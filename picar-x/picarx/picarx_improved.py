@@ -97,9 +97,10 @@ class Picarx(object):
         elif speed < 0:
             direction = -1 * self.cali_dir_value[motor]
         speed = abs(speed)
-        if speed != 0:
-            speed = int(speed / 2) + 50
+        # if speed != 0:
+            # speed = int(speed / 2) + 50
         speed = speed - self.cali_speed_value[motor]
+        logging.debug(f"{motor+1}: {speed}")
         if direction < 0:
             self.motor_direction_pins[motor].high()
             self.motor_speed_pins[motor].pulse_width_percent(speed)
@@ -121,9 +122,9 @@ class Picarx(object):
         # 1: positive direction
         # -1:negative direction
         motor -= 1
-        # if value == 1:
-        #     self.cali_dir_value[motor] = -1 * self.cali_dir_value[motor]
-        # self.config_flie.set("picarx_dir_motor", self.cali_dir_value)
+        if value == 1:
+            self.cali_dir_value[motor] = -1 * self.cali_dir_value[motor]
+        self.config_flie.set("picarx_dir_motor", self.cali_dir_value)
         if value == 1:
             self.cali_dir_value[motor] = 1
         elif value == -1:
@@ -163,26 +164,23 @@ class Picarx(object):
         self.set_motor_speed(1, speed)
         self.set_motor_speed(2, speed)
 
+    @log_on_error(logging.DEBUG, "Error in forward motion.")
     def backward(self, speed):
         current_angle = self.dir_current_angle
-        speed = -speed
         if current_angle != 0:
             abs_current_angle = abs(current_angle)
             # if abs_current_angle >= 0:
             if abs_current_angle > 40:
                 abs_current_angle = 40
-            try:
-                if (current_angle / abs_current_angle) < 0:
-                    self.set_motor_speed(1, -speed)
-                    self.set_motor_speed(2, self.turning_motor_speed(speed, current_angle))
-                else:
-                    self.set_motor_speed(1, self.turning_motor_speed(speed, current_angle))
-                    self.set_motor_speed(2, speed)
-            except ZeroDivisionError:
-                self.set_motor_speed(1, -speed)
+
+            if (current_angle / abs_current_angle) > 0:
+                self.set_motor_speed(1, -self.turning_motor_speed(speed, current_angle))
                 self.set_motor_speed(2, speed)
+            else:
+                self.set_motor_speed(1, -speed)
+                self.set_motor_speed(2, self.turning_motor_speed(speed, current_angle))
         else:
-            self.set_motor_speed(1, -1 * speed)
+            self.set_motor_speed(1, -speed)
             self.set_motor_speed(2, speed)
 
     @log_on_error(logging.DEBUG, "Error in forward motion.")
@@ -195,7 +193,7 @@ class Picarx(object):
             if abs_current_angle > 40:
                 abs_current_angle = 40
 
-            logging.debug(f"{speed}, {self.turning_motor_speed(speed, abs_current_angle)}")
+            # logging.debug(f"{speed}, {self.turning_motor_speed(speed, abs_current_angle)}")
             if (current_angle / abs_current_angle) > 0:
                 self.set_motor_speed(1, speed)
                 self.set_motor_speed(2, -self.turning_motor_speed(speed, abs_current_angle))
@@ -204,7 +202,6 @@ class Picarx(object):
                 self.set_motor_speed(2, -speed)
 
         else:
-            logging.debug(f"{speed}")
             self.set_motor_speed(1, speed)
             self.set_motor_speed(2, -speed)
 
