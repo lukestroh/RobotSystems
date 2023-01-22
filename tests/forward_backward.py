@@ -3,14 +3,14 @@
 circle.py
 Luke Strohbehn
 """
-import picarx.picarx_improved as pcx
+import picarx as pcx
 
 
 # import picarx.picarx_improved
 import time
 import atexit
 
-SPEED = 20
+SPEED = 10
 ANGLE = 20
 
 RANGE = 1000
@@ -27,25 +27,32 @@ def main():
     # time.sleep(1)
     # for i in range(1000):
     #     px.backward(SPEED)
+
+    for i in range(RANGE):
+        px.set_dir_servo_angle(ANGLE)
+        try:
+            px.forward(SPEED)
+            time.sleep(0.001)
+        except KeyboardInterrupt:
+            break
     
-    px.set_dir_servo_angle(ANGLE)
-    for i in range(RANGE):
-        try:
-            px.forward(SPEED)
-            time.sleep(0.001)
-        except KeyboardInterrupt:
-            break
-    for i in range(RANGE):
-        px.set_dir_servo_angle(-ANGLE)
-        try:
-            px.forward(SPEED)
-            time.sleep(0.001)
-        except KeyboardInterrupt:
-            break
+    # px.set_dir_servo_angle(0)
+    # for angle in range(30):
+    #     px.set_dir_servo_angle(angle)
+    #     px.forward(SPEED)
+    #     time.sleep(1)
+    # return px
+
+    # px.set_dir_servo_angle(-20)
+    # for i in range(10000):
+    #     px.forward(SPEED)
+    #     # time.sleep(7)
+    # px.forward(0)
     return px
     
 
 
 if __name__ == "__main__":
+
     px = main()
     atexit.register(px.stop)

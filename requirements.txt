@@ -87,7 +87,6 @@ requests==2.21.0
 requests-oauthlib==1.0.0
 responses==0.9.0
 robot-hat==1.0.2
--e git+ssh://git@github.com/lukestroh/RobotSystems.git@6019e311d62f904c8d4a37a6dab00d11d3367d80#egg=RobotSystems
 roman==2.0.0
 RPi.GPIO==0.7.0
 RTIMULib==7.2.1

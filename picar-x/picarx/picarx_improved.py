@@ -5,9 +5,9 @@ import atexit
 
 try:
     from robot_hat import *
-    from robot_hat import __reset_mcu__
+    from robot_hat.utils import reset_mcu
 
-    __reset_mcu__()
+    reset_mcu()
     time.sleep(0.01)
 except (ImportError, ModuleNotFoundError):
     print(
@@ -17,7 +17,7 @@ except (ImportError, ModuleNotFoundError):
 
 import os
 import time
-import math as m
+import numpy as np
 
 logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%H:%M:%S")
@@ -165,17 +165,18 @@ class Picarx(object):
 
     def backward(self, speed):
         current_angle = self.dir_current_angle
+        speed = -speed
         if current_angle != 0:
             abs_current_angle = abs(current_angle)
             # if abs_current_angle >= 0:
             if abs_current_angle > 40:
                 abs_current_angle = 40
             try:
-                if (current_angle / abs_current_angle) > 0:
+                if (current_angle / abs_current_angle) < 0:
                     self.set_motor_speed(1, -speed)
                     self.set_motor_speed(2, self.turning_motor_speed(speed, current_angle))
                 else:
-                    self.set_motor_speed(1, -self.turning_motor_speed(speed, current_angle))
+                    self.set_motor_speed(1, self.turning_motor_speed(speed, current_angle))
                     self.set_motor_speed(2, speed)
             except ZeroDivisionError:
                 self.set_motor_speed(1, -speed)
@@ -190,38 +191,37 @@ class Picarx(object):
         if current_angle != 0:
             abs_current_angle = abs(current_angle)
             # if abs_current_angle >= 0:
+            
             if abs_current_angle > 40:
                 abs_current_angle = 40
 
-            # if (current_angle / abs_current_angle) > 0:
-            #     self.set_motor_speed(1, 1 * speed)
-            #     self.set_motor_speed(2, -speed)
-            #     # print("current_speed: %s %s"%(1*speed * power_scale, -speed))
-            # else:
-            #     self.set_motor_speed(1, speed)
-            #     self.set_motor_speed(2, -1 * speed)
-            #     # print("current_speed: %s %s"%(speed, -1*speed * power_scale))
-            try:
-                if (current_angle / abs_current_angle) > 0:
-                    self.set_motor_speed(1, self.turning_motor_speed(speed, current_angle))
-                    self.set_motor_speed(2, -speed)
-                else:
-                    self.set_motor_speed(1, speed)
-                    self.set_motor_speed(2, -self.turning_motor_speed(speed, current_angle))
-            except ZeroDivisionError:
+            logging.debug(f"{speed}, {self.turning_motor_speed(speed, abs_current_angle)}")
+            if (current_angle / abs_current_angle) > 0:
                 self.set_motor_speed(1, speed)
+                self.set_motor_speed(2, -self.turning_motor_speed(speed, abs_current_angle))
+            else:
+                self.set_motor_speed(1, self.turning_motor_speed(speed, abs_current_angle))
                 self.set_motor_speed(2, -speed)
-        else:
-            self.set_motor_speed(1, speed)
-            self.set_motor_speed(2, -1 * speed)
 
+        else:
+            logging.debug(f"{speed}")
+            self.set_motor_speed(1, speed)
+            self.set_motor_speed(2, -speed)
+
+    @log_on_error(logging.DEBUG, "Error with the turning motor speed")
     def turning_motor_speed(self, v_1, theta):
         v_2 = (
-            (self.LENGTH_WHEELBASE * 1 / m.tan(theta))
-            / (self.LENGTH_WHEELBASE * 1 / m.tan(theta) + self.LENGTH_WHEELBASE)
-            * v_1
-        )
+            (self.WIDTH_WHEELBASE/2 + self.LENGTH_WHEELBASE * 1/np.tan(np.radians(theta)))
+            / (self.LENGTH_WHEELBASE * 1/np.tan(np.radians(theta)) - self.WIDTH_WHEELBASE/2)
+            
+        ) * v_1
+        # v_2 = (
+        #     (self.LENGTH_WHEELBASE * 1/np.tan(np.radians(theta)))
+        #     / (self.LENGTH_WHEELBASE * 1/np.tan(np.radians(theta)) + self.WIDTH_WHEELBASE)
+            
+        # ) * v_1
         return v_2
+
 
     @log_on_end(logging.DEBUG, "PicarX motors stopped.")
     def stop(self):
