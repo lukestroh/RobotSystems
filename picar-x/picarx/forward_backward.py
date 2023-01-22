@@ -11,7 +11,7 @@ import time
 import atexit
 
 SPEED = 50
-ANGLE = 20
+ANGLE = 0
 
 RANGE = 1000
 

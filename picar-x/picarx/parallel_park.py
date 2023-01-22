@@ -10,16 +10,32 @@ import picarx_improved as pcx
 import time
 import atexit
 
-SPEED = 50
-ANGLE = 20
+RANGE = 20
+ANGLE = 30
+SPEED = 45
 
-RANGE = 1000
+def parallel_park(px: pcx.Picarx, ANGLE=ANGLE, street_side:str ="right"):
+    if street_side == "left":
+        ANGLE = -ANGLE
+    px.set_dir_servo_angle(0)
+
+    for angle in range(ANGLE):
+        px.set_dir_servo_angle(angle)
+        for j in range(RANGE):
+            px.backward(SPEED)
+            time.sleep(0.001)
+
+    for angle in range(ANGLE, -ANGLE, -1):
+        px.set_dir_servo_angle(angle)
+        for j in range(RANGE):
+            px.backward(SPEED)
+            time.sleep(0.001)
 
 
 def main():
     px = pcx.Picarx()
-    
-    
+    parallel_park(px)
+
     return px
     
 
