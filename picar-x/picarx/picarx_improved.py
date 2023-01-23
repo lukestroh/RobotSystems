@@ -52,8 +52,11 @@ class Picarx(object):
         config: str = config_file,
     ):
         # Car dimensions
-        self.LENGTH_WHEELBASE: float = 9.36625  # cm 3 + 11/16 in
-        self.WIDTH_WHEELBASE: float = 11.43  # cm 4.5 in
+        self.LENGTH_CHASSIS: float = 9.36625  # cm 3 + 11/16 in
+        self.WIDTH_BACK_WHEELBASE: float = 11.43  # cm 4.5 in
+        self.LENGTH_FRONT_WHEELBASE: float = 10.75
+        self.FRONT_WHEEL_DI: float = 6.6
+        self.BACK_WHEEL_DI: float = 6.58
         # config_flie
         self.config_flie = fileDB(config, 774, User)
         # servos init
@@ -169,7 +172,6 @@ class Picarx(object):
         current_angle = self.dir_current_angle
         if current_angle != 0:
             abs_current_angle = abs(current_angle)
-            # if abs_current_angle >= 0:
             if abs_current_angle > 40:
                 abs_current_angle = 40
 
@@ -188,8 +190,6 @@ class Picarx(object):
         current_angle = self.dir_current_angle
         if current_angle != 0:
             abs_current_angle = abs(current_angle)
-            # if abs_current_angle >= 0:
-            
             if abs_current_angle > 40:
                 abs_current_angle = 40
 
@@ -208,15 +208,12 @@ class Picarx(object):
     @log_on_error(logging.DEBUG, "Error with the turning motor speed")
     def turning_motor_speed(self, v_1, theta):
         v_2 = (
-            (self.WIDTH_WHEELBASE/2 + self.LENGTH_WHEELBASE * 1/np.tan(np.radians(theta)))
-            / (self.LENGTH_WHEELBASE * 1/np.tan(np.radians(theta)) - self.WIDTH_WHEELBASE/2)
-            
+            (self.WIDTH_BACK_WHEELBASE/2 + self.LENGTH_CHASSIS * 1/np.tan(np.radians(theta)))
+            / (self.LENGTH_CHASSIS * 1/np.tan(np.radians(theta)) - self.WIDTH_BACK_WHEELBASE/2)
         ) * v_1
-        # v_2 = (
-        #     (self.LENGTH_WHEELBASE * 1/np.tan(np.radians(theta)))
-        #     / (self.LENGTH_WHEELBASE * 1/np.tan(np.radians(theta)) + self.WIDTH_WHEELBASE)
-            
-        # ) * v_1
+
+        # v_2 = self.BACK_WHEEL_DI/(2*np.pi*)
+
         return v_2
 
 
