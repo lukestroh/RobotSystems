@@ -9,7 +9,7 @@ import logging
 import time
 import atexit
 
-RANGE = 40
+RANGE = 1
 ANGLE = 30
 SPEED = 45
 
@@ -26,10 +26,10 @@ def parallel_park(px: pcx.Picarx, ANGLE=ANGLE, street_side:str ="right"):
             time.sleep(0.001)
 
     time.sleep(1)
-    for angle in range(-ANGLE, 0, -1):
+    for angle in range(0, -ANGLE, -1):
         logging.debug(f"ANGLE: {angle}")
         px.set_dir_servo_angle(angle)
-        for j in range(RANGE):
+        for j in range(RANGE*20):
             px.forward(SPEED)
             time.sleep(0.001)
 

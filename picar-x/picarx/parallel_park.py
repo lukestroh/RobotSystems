@@ -22,15 +22,7 @@ def parallel_park(px: pcx.Picarx, ANGLE=ANGLE, street_side:str ="right"):
     for i in range(RANGE*20):
         px.backward(SPEED)
         time.sleep(0.001)
-
-    # for angle in range(ANGLE):
-    #     print(angle)
-    #     px.set_dir_servo_angle(angle)
-    #     for j in range(RANGE):
-    #         px.backward(SPEED)
-    #         time.sleep(0.001)
-
-
+        
     for angle in range(ANGLE, 0, -1):
         print(angle)
         px.set_dir_servo_angle(angle)
@@ -51,17 +43,6 @@ def parallel_park(px: pcx.Picarx, ANGLE=ANGLE, street_side:str ="right"):
         px.forward(SPEED)
         time.sleep(0.001)
 
-    # time.sleep(.2)
-
-    # px.backward(SPEED)
-    # time.sleep(1)
-
-    # for angle in range(0, -ANGLE, -1):
-    #     print(angle)
-    #     px.set_dir_servo_angle(angle)
-    #     for j in range(RANGE):
-    #         px.backward(SPEED)
-    #         time.sleep(0.001)
     px.forward(0)
 
 
