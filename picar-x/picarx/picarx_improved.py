@@ -174,11 +174,11 @@ class Picarx(object):
                 abs_current_angle = 40
 
             if (current_angle / abs_current_angle) > 0:
-                self.set_motor_speed(1, -self.turning_motor_speed(speed, current_angle))
-                self.set_motor_speed(2, speed)
-            else:
                 self.set_motor_speed(1, -speed)
-                self.set_motor_speed(2, self.turning_motor_speed(speed, current_angle))
+                self.set_motor_speed(2, self.turning_motor_speed(speed, abs_current_angle))
+            else:
+                self.set_motor_speed(1, -self.turning_motor_speed(speed, abs_current_angle))
+                self.set_motor_speed(2, speed)
         else:
             self.set_motor_speed(1, -speed)
             self.set_motor_speed(2, speed)
