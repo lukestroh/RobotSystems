@@ -6,6 +6,7 @@ Luke Strohbehn
 """
 
 import picarx_improved as pcx
+# import numpy as np
 
 class Interpreter():
 
@@ -15,12 +16,14 @@ class Interpreter():
         self.polarity = polarity
 
     def follow_path(self, greyscale_data) -> int:
-        
+
         if self.polarity == "light":
-            if greyscale_data[0] < self.light_idx and greyscale_data[1] < self.light_idx and greyscale_data[2] < self.light_idx:
-                return -1
+            # if greyscale_data[0] < self.light_idx and greyscale_data[1] < self.light_idx and greyscale_data[2] < self.light_idx:
+            #     return -1
 
-            if 
+            # if 
 
+            G_x = [1, 2, 1] * ([2,0,-2] * greyscale_data)
+            return G_x
         else:
             pass
