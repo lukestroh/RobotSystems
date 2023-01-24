@@ -24,9 +24,7 @@ def main():
         px.forward(SPEED)
         time.sleep(0.001)
 
-    
     return px
-    
 
 
 if __name__ == "__main__":

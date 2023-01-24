@@ -91,6 +91,8 @@ class Picarx(object):
         # usage: distance = self.ultrasonic.read()
         tring, echo = ultrasonic_pins
         self.ultrasonic = Ultrasonic(Pin(tring), Pin(echo))
+        # at exit
+        atexit.register(self.cleanup)
 
     def set_motor_speed(self, motor, speed):
         # global cali_speed_value,cali_dir_value
@@ -101,7 +103,7 @@ class Picarx(object):
             direction = -1 * self.cali_dir_value[motor]
         speed = abs(speed)
         # if speed != 0:
-            # speed = int(speed / 2) + 50
+        # speed = int(speed / 2) + 50
         speed = speed - self.cali_speed_value[motor]
         logging.debug(f"{motor+1}: {speed}")
         if direction < 0:
@@ -208,19 +210,21 @@ class Picarx(object):
     @log_on_error(logging.DEBUG, "Error with the turning motor speed")
     def turning_motor_speed(self, v_1, theta):
         v_2 = (
-            (self.WIDTH_BACK_WHEELBASE/2 + self.LENGTH_CHASSIS * 1/np.tan(np.radians(theta)))
-            / (self.LENGTH_CHASSIS * 1/np.tan(np.radians(theta)) - self.WIDTH_BACK_WHEELBASE/2)
+            (self.WIDTH_BACK_WHEELBASE / 2 + self.LENGTH_CHASSIS * 1 / np.tan(np.radians(theta)))
+            / (self.LENGTH_CHASSIS * 1 / np.tan(np.radians(theta)) - self.WIDTH_BACK_WHEELBASE / 2)
         ) * v_1
 
         # v_2 = self.BACK_WHEEL_DI/(2*np.pi*)
 
         return v_2
 
-
     @log_on_end(logging.DEBUG, "PicarX motors stopped.")
     def stop(self):
         self.set_motor_speed(1, 0)
         self.set_motor_speed(2, 0)
+
+    def cleanup(self):
+        self.stop()
 
     def get_distance(self):
         return self.ultrasonic.read()
@@ -239,4 +243,3 @@ if __name__ == "__main__":
     px = Picarx()
     px.forward(50)
     time.sleep(1)
-    atexit.register(px.stop)
