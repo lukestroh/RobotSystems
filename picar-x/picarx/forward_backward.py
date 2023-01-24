@@ -18,12 +18,12 @@ RANGE = 10000
 
 def main():
     px = pcx.Picarx()
+
     for i in range(RANGE):
         px.set_dir_servo_angle(-ANGLE)
-
+        px.print_grayscale_data()
         px.forward(SPEED)
         time.sleep(0.001)
-
     return px
 
 

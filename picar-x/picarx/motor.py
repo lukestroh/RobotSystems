@@ -468,7 +468,7 @@ class Motor(_Basic_class):
                 self.i2c_write(reg, self._prescaler)
 
         def period(self, *arr):
-            global timer
+            # global timer
             if len(arr) == 0:
                 return timer[self.timer]["arr"]
             else:
@@ -486,7 +486,7 @@ class Motor(_Basic_class):
                 self.i2c_write(reg, self._pulse_width)
 
         def pulse_width_percent(self, *pulse_width_percent):
-            global timer
+            # global timer
             if len(pulse_width_percent) == 0:
                 return self._pulse_width_percent
             else:
