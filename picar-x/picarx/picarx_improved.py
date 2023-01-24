@@ -213,9 +213,6 @@ class Picarx(object):
             (self.WIDTH_BACK_WHEELBASE / 2 + self.LENGTH_CHASSIS * 1 / np.tan(np.radians(theta)))
             / (self.LENGTH_CHASSIS * 1 / np.tan(np.radians(theta)) - self.WIDTH_BACK_WHEELBASE / 2)
         ) * v_1
-
-        # v_2 = self.BACK_WHEEL_DI/(2*np.pi*)
-
         return v_2
 
     @log_on_end(logging.DEBUG, "PicarX motors stopped.")
@@ -238,6 +235,8 @@ class Picarx(object):
     def get_line_status(self, gm_val_list):
         return str(self.grayscale.get_line_status(gm_val_list))
 
+    def print_grayscale_data(self):
+        print(self.get_grayscale_data())
 
 if __name__ == "__main__":
     px = Picarx()
