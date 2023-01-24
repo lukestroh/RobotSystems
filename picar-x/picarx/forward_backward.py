@@ -10,10 +10,10 @@ import picarx_improved as pcx
 import time
 import atexit
 
-SPEED = 50
+SPEED = 100
 ANGLE = 0
 
-RANGE = 1000
+RANGE = 10000
 
 
 def main():
@@ -21,12 +21,10 @@ def main():
     for i in range(RANGE):
         px.set_dir_servo_angle(-ANGLE)
 
-        px.backward(SPEED)
+        px.forward(SPEED)
         time.sleep(0.001)
 
-    
     return px
-    
 
 
 if __name__ == "__main__":
