@@ -19,7 +19,7 @@ import os
 import time
 import numpy as np
 
-from interpreter import Interpreter
+from interpreter import GreyscaleInterpreter
 
 logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%H:%M:%S")
@@ -95,7 +95,7 @@ class Picarx(object):
         self.ultrasonic = Ultrasonic(Pin(tring), Pin(echo))
 
         # Interpreter
-        self.interpreter = Interpreter(1000, 500, "light")
+        self.gs_interpreter = GreyscaleInterpreter(1000, 500, "light")
 
         # at exit
         atexit.register(self.cleanup)
