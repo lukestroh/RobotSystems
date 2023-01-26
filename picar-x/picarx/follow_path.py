@@ -29,7 +29,9 @@ def main():
             else:
                 px.set_dir_servo_angle(map_steer_idx_to_angle(steer_val))
                 px.forward(SPEED)
-    return
+    except KeyboardInterrupt:
+        px.stop()
+        return
 
 
 if __name__ == "__main__":

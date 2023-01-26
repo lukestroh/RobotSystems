@@ -10,6 +10,7 @@ from numpy import mean
 import scipy as sp
 from typing import List
 from collections import deque
+import logging
 
 class GreyscaleInterpreter():
 
@@ -19,14 +20,14 @@ class GreyscaleInterpreter():
         self.polarity = polarity
 
 
-        self.deriv_thresh = 100 # adjust for sensitivity
+        self.deriv_thresh = 300 # adjust for sensitivity
 
         self.deque_len = 20
         self.left_deq = deque([], maxlen=self.deque_len)
         self.mid_deq = deque([], maxlen=self.deque_len)
         self.right_deq = deque([], maxlen=self.deque_len)
 
-    def set_initial_gs_vals(self, greyscale_data:List[int, int, int]):
+    def set_initial_gs_vals(self, greyscale_data:List[int]):
         self.left_prev = greyscale_data[0]
         self.mid_prev = greyscale_data[1]
         self.right_prev = greyscale_data[2]
@@ -35,7 +36,7 @@ class GreyscaleInterpreter():
         return (_input/(max1 - min1)*(max2 - min2))
         
 
-    def follow_path_comm(self, greyscale_data: List[int, int, int]) -> float:
+    def follow_path_comm(self, greyscale_data: List[int]) -> float:
         self.left_curr = greyscale_data[0]
         self.mid_curr = greyscale_data[1]
         self.right_curr = greyscale_data[2]
@@ -60,9 +61,12 @@ class GreyscaleInterpreter():
         if left_diff > self.deriv_thresh and right_diff > self.deriv_thresh and mid_diff > self.deriv_thresh:
             return None
         #
+        
         if abs(left_diff) > self.deriv_thresh:
+            logging.debug(f"{-self.get_steering_idx(mean([self.left_curr, self.right_curr]))}")
             return -1.0 * self.get_steering_idx(mean([self.left_curr, self.right_curr]))
         elif abs(right_diff) > self.deriv_thresh:
+            logging.debug(f"{self.get_steering_idx(mean([self.left_curr, self.right_curr]))}")
             return self.get_steering_idx(mean([self.left_curr, self.right_curr]))
         else:
             return 0
