@@ -13,7 +13,7 @@ except (ImportError, ModuleNotFoundError):
     print(
         "This computer does not appear to be a PiCar-X system (robot_hat is not present). Shadowing hardware calls with substitute functions."
     )
-    from .sim_robot_hat import *
+    from sim_robot_hat import *
 
 import os
 import time
@@ -245,6 +245,10 @@ class Picarx(object):
         data = self.get_grayscale_data()
         print(data)
         print(self.interpreter.follow_path(data))
+
+    def follow_path(self):
+        return
+
 
 if __name__ == "__main__":
     px = Picarx()
