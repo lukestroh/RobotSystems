@@ -48,8 +48,12 @@ class GreyscaleInterpreter:
                 left_curr = self.MAX_ADC - self.left_curr
                 return mean([left_curr, self.right_curr])
         else:
-            
-            return mean([self.left_curr, self.right_curr])
+            if side == "right":
+                left_curr = self.MAX_ADC - self.left_curr
+                return mean([left_curr, self.right_curr])
+            else:
+                right_curr = self.MAX_ADC - self.right_curr
+                return mean([self.left_curr, right_curr])
             
                 
 
