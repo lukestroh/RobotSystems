@@ -12,29 +12,46 @@ from typing import List
 from collections import deque
 import logging
 
-class GreyscaleInterpreter():
 
-    def __init__(self, light_idx:int, dark_idx:int, polarity:str="dark") -> None:
+class GreyscaleInterpreter:
+    def __init__(self, light_idx: int, dark_idx: int, polarity: str = "dark") -> None:
         self.light_idx = light_idx
         self.dark_idx = dark_idx
         self.polarity = polarity
 
-
-        self.deriv_thresh = 300 # adjust for sensitivity
+        self.deriv_thresh = 300  # adjust for sensitivity
+        self.MAX_ADC = 1500
 
         self.deque_len = 20
         self.left_deq = deque([], maxlen=self.deque_len)
         self.mid_deq = deque([], maxlen=self.deque_len)
         self.right_deq = deque([], maxlen=self.deque_len)
 
-    def set_initial_gs_vals(self, greyscale_data:List[int]):
+    def set_initial_gs_vals(self, greyscale_data: List[int]) -> None:
         self.left_prev = greyscale_data[0]
         self.mid_prev = greyscale_data[1]
         self.right_prev = greyscale_data[2]
 
-    def get_steering_idx(self, _input: int, min1:float=0, max1:float=1500, min2:float=0, max2:float = 1.0) -> float:
-        return (_input/(max1 - min1)*(max2 - min2))
-        
+    def scale_ADC_vals(
+        self, _input: int, min1: float = 0, max1: float = 1500, min2: float = 0, max2: float = 1.0
+    ) -> float:
+        """ Convert from ADC values to a [0,1] scale."""
+        return _input / (max1 - min1) * (max2 - min2)
+
+    def get_steering_scale(self, side) -> float:
+        # maybe subtract the light/dark scales here?
+        if self.polarity == "dark":
+            if side == "right":
+                right_curr = self.MAX_ADC - self.right_curr
+                return mean([self.left_curr, right_curr])
+            else:
+                left_curr = self.MAX_ADC - self.left_curr
+                return mean([left_curr, self.right_curr])
+        else:
+            
+            return mean([self.left_curr, self.right_curr])
+            
+                
 
     def follow_path_comm(self, greyscale_data: List[int]) -> float:
         self.left_curr = greyscale_data[0]
@@ -61,12 +78,15 @@ class GreyscaleInterpreter():
         if left_diff > self.deriv_thresh and right_diff > self.deriv_thresh and mid_diff > self.deriv_thresh:
             return None
         #
-        
+
+        steer_scl = self.get_steering_scale()
         if abs(left_diff) > self.deriv_thresh:
-            logging.debug(f"{-self.get_steering_idx(mean([self.left_curr, self.right_curr]))}")
-            return -1.0 * self.get_steering_idx(mean([self.left_curr, self.right_curr]))
+            scaled_val = self.scale_ADC_vals(steer_scl, "left")
+            logging.debug(-1 * scaled_val)
+            return -1.0 * scaled_val
         elif abs(right_diff) > self.deriv_thresh:
-            logging.debug(f"{self.get_steering_idx(mean([self.left_curr, self.right_curr]))}")
-            return self.get_steering_idx(mean([self.left_curr, self.right_curr]))
+            scaled_val = self.scale_ADC_vals(steer_scl, "right")
+            logging.debug(scaled_val)
+            return scaled_val
         else:
             return 0

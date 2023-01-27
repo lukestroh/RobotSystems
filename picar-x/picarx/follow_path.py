@@ -10,8 +10,9 @@ import picarx_improved as pcx
 SPEED = 40
 MAX_STEER_ANGLE = 35
 
-def map_steer_idx_to_angle(steer_val:float) -> float:
-    return (steer_val/(1)*35)
+
+def map_steer_idx_to_angle(steer_val: float) -> float:
+    return steer_val / (1) * 35
 
 
 def main():
