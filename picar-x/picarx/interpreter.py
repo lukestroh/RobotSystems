@@ -22,15 +22,15 @@ class GreyscaleInterpreter:
         self.deriv_thresh = 300  # adjust for sensitivity
         self.MAX_ADC = 1500
 
-        self.deque_len = 20
+        self.deque_len = 35
         self.left_deq = deque([], maxlen=self.deque_len)
         self.mid_deq = deque([], maxlen=self.deque_len)
         self.right_deq = deque([], maxlen=self.deque_len)
 
     def set_initial_gs_vals(self, greyscale_data: List[int]) -> None:
-        self.left_prev = greyscale_data[0]
-        self.mid_prev = greyscale_data[1]
-        self.right_prev = greyscale_data[2]
+        self.left_deq.append(greyscale_data[0])
+        self.mid_deq.append(greyscale_data[1])
+        self.right_deq.append(greyscale_data[2])
 
     def scale_ADC_vals(
         self, _input: int, min1: float = 0, max1: float = 1500, min2: float = 0, max2: float = 1.0
@@ -40,6 +40,21 @@ class GreyscaleInterpreter:
 
     def get_steering_scale(self, side) -> float:
         # maybe subtract the light/dark scales here?
+        # if self.polarity == "dark":
+        #     if side == "right":
+        #         right_curr = self.MAX_ADC - self.right_curr
+        #         return mean([self.left_curr, right_curr])
+        #     else:
+        #         left_curr = self.MAX_ADC - self.left_curr
+        #         return mean([left_curr, self.right_curr])
+        # else:
+        #     if side == "right":
+        #         left_curr = self.MAX_ADC - self.left_curr
+        #         return mean([left_curr, self.right_curr])
+        #     else:
+        #         right_curr = self.MAX_ADC - self.right_curr
+        #         return mean([self.left_curr, right_curr])
+            
         if self.polarity == "dark":
             if side == "right":
                 right_curr = self.MAX_ADC - self.right_curr
@@ -68,10 +83,16 @@ class GreyscaleInterpreter:
         mid_avg = mean(self.mid_deq)
         right_avg = mean(self.right_deq)
 
-        # some code here
+        # sensor average differences
         left_diff = left_avg - self.left_curr
         mid_diff = mid_avg - self.mid_curr
         right_diff = right_avg - self.right_curr
+
+        # sensor side differences
+        left_mid_der = self.left_curr - mid_avg
+        right_mid_der = self.right_curr - mid_avg
+
+        logging.debug(left_mid_der, right_mid_der, left_mid_der / right_mid_der)
 
         # add to the deques before we return values
         self.left_deq.append(self.left_curr)
@@ -83,14 +104,21 @@ class GreyscaleInterpreter:
             return None
         #
 
-        steer_scl = self.get_steering_scale()
-        if abs(left_diff) > self.deriv_thresh:
-            scaled_val = self.scale_ADC_vals(steer_scl, "left")
-            logging.debug(-1 * scaled_val)
-            return -1.0 * scaled_val
-        elif abs(right_diff) > self.deriv_thresh:
-            scaled_val = self.scale_ADC_vals(steer_scl, "right")
-            logging.debug(scaled_val)
-            return scaled_val
-        else:
-            return 0
+        # steer_scl = self.get_steering_scale()
+        # if abs(left_diff) > self.deriv_thresh:
+        #     scaled_val = self.scale_ADC_vals(steer_scl, "left")
+        #     logging.debug(-1 * scaled_val)
+        #     return -1.0 * scaled_val
+        # elif abs(right_diff) > self.deriv_thresh:
+        #     scaled_val = self.scale_ADC_vals(steer_scl, "right")
+        #     logging.debug(scaled_val)
+        #     return scaled_val
+        # else:
+        #     return 0
+
+
+def main():
+
+
+if __name__ == "__main__":
+    main()
