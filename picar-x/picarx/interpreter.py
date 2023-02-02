@@ -12,6 +12,10 @@ from typing import List
 from collections import deque
 import logging
 
+logging_format = "%(asctime)s: %(message)s"
+logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%H:%M:%S")
+logging.getLogger().setLevel(logging.DEBUG)
+
 
 class GreyscaleInterpreter:
     def __init__(self, light_idx: int, dark_idx: int, polarity: str = "dark") -> None:
@@ -21,6 +25,7 @@ class GreyscaleInterpreter:
 
         self.deriv_thresh = 300  # adjust for sensitivity
         self.MAX_ADC = 1500
+        self.max_steer_angle = 30
 
         self.deque_len = 35
         self.left_deq = deque([], maxlen=self.deque_len)
@@ -31,48 +36,9 @@ class GreyscaleInterpreter:
         self.left_deq.append(greyscale_data[0])
         self.mid_deq.append(greyscale_data[1])
         self.right_deq.append(greyscale_data[2])
-
-    def scale_ADC_vals(
-        self, _input: int, min1: float = 0, max1: float = 1500, min2: float = 0, max2: float = 1.0
-    ) -> float:
-        """ Convert from ADC values to a [0,1] scale."""
-        return _input / (max1 - min1) * (max2 - min2)
-
-    def get_steering_scale(self, side) -> float:
-        # maybe subtract the light/dark scales here?
-        # if self.polarity == "dark":
-        #     if side == "right":
-        #         right_curr = self.MAX_ADC - self.right_curr
-        #         return mean([self.left_curr, right_curr])
-        #     else:
-        #         left_curr = self.MAX_ADC - self.left_curr
-        #         return mean([left_curr, self.right_curr])
-        # else:
-        #     if side == "right":
-        #         left_curr = self.MAX_ADC - self.left_curr
-        #         return mean([left_curr, self.right_curr])
-        #     else:
-        #         right_curr = self.MAX_ADC - self.right_curr
-        #         return mean([self.left_curr, right_curr])
-            
-        if self.polarity == "dark":
-            if side == "right":
-                right_curr = self.MAX_ADC - self.right_curr
-                return mean([self.left_curr, right_curr])
-            else:
-                left_curr = self.MAX_ADC - self.left_curr
-                return mean([left_curr, self.right_curr])
-        else:
-            if side == "right":
-                left_curr = self.MAX_ADC - self.left_curr
-                return mean([left_curr, self.right_curr])
-            else:
-                right_curr = self.MAX_ADC - self.right_curr
-                return mean([self.left_curr, right_curr])
-            
                 
 
-    def follow_path_comm(self, greyscale_data: List[int]) -> float:
+    def get_steering_scale(self, greyscale_data: List[int]) -> float:
         self.left_curr = greyscale_data[0]
         self.mid_curr = greyscale_data[1]
         self.right_curr = greyscale_data[2]
@@ -88,37 +54,46 @@ class GreyscaleInterpreter:
         mid_diff = mid_avg - self.mid_curr
         right_diff = right_avg - self.right_curr
 
-        # sensor side differences
-        left_mid_der = self.left_curr - mid_avg
-        right_mid_der = self.right_curr - mid_avg
-
-        logging.debug(left_mid_der, right_mid_der, left_mid_der / right_mid_der)
-
         # add to the deques before we return values
         self.left_deq.append(self.left_curr)
         self.mid_deq.append(self.mid_curr)
         self.right_deq.append(self.right_curr)
 
-        # off track case
+         # off track case
         if left_diff > self.deriv_thresh and right_diff > self.deriv_thresh and mid_diff > self.deriv_thresh:
             return None
-        #
 
-        # steer_scl = self.get_steering_scale()
-        # if abs(left_diff) > self.deriv_thresh:
-        #     scaled_val = self.scale_ADC_vals(steer_scl, "left")
-        #     logging.debug(-1 * scaled_val)
-        #     return -1.0 * scaled_val
-        # elif abs(right_diff) > self.deriv_thresh:
-        #     scaled_val = self.scale_ADC_vals(steer_scl, "right")
-        #     logging.debug(scaled_val)
-        #     return scaled_val
-        # else:
-        #     return 0
+        # sensor side differences
+        left_mid_der = self.left_curr - mid_avg
+        right_mid_der = self.right_curr - mid_avg
+
+        total_diff = left_mid_der - right_mid_der
+        scaled_diff = total_diff / self.MAX_ADC
+        logging.debug(f"{scaled_diff}")
+
+        return scaled_diff
+    
+    
+    def map_steer_idx_to_angle(self, steer_scale):
+        if steer_scale is None:
+            pass
+        else:
+            return steer_scale * self.max_steer_angle
+
+
+    def follow_line(self, greyscale_data: List[int]):
+        steer_scale = self.get_steering_scale(greyscale_data)
+        if steer_scale is None:
+            return None
+        else:
+            steer_angle = self.map_steer_idx_to_angle(steer_scale)
+            return steer_angle
+
+
 
 
 def main():
-
+    return
 
 if __name__ == "__main__":
     main()
