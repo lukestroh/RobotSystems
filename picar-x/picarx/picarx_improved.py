@@ -20,6 +20,7 @@ import time
 import numpy as np
 
 from interpreter import GreyscaleInterpreter
+from maneuver import Maneuver
 
 logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%H:%M:%S")
@@ -96,6 +97,9 @@ class Picarx(object):
 
         # Interpreter
         self.gs_interpreter = GreyscaleInterpreter(1000, 500, "light")
+
+        # Maneuver
+        self.maneuver = Maneuver(self)
 
         # at exit
         atexit.register(self.cleanup)
@@ -250,7 +254,7 @@ class Picarx(object):
         return
 
 
-if __name__ == "__main__":
-    px = Picarx()
-    px.forward(50)
-    time.sleep(1)
+
+
+
+

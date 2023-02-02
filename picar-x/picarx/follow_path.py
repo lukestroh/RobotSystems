@@ -35,21 +35,6 @@ def main():
     except KeyboardInterrupt:
         px.stop()
 
-    # try:
-    #     while True:
-    #         gs_data = px.get_grayscale_data()
-    #         steer_val = px.gs_interpreter.follow_path_comm(gs_data)
-    #         if steer_val is None:
-    #             px.stop()
-    #         elif steer_val == 0:
-    #             px.forward(SPEED)
-    #         else:
-    #             px.set_dir_servo_angle(map_steer_idx_to_angle(steer_val))
-    #             px.forward(SPEED)
-    # except KeyboardInterrupt:
-    #     px.stop()
-    #     return
-
 
 if __name__ == "__main__":
     main()
