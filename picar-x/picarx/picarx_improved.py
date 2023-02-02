@@ -13,11 +13,14 @@ except (ImportError, ModuleNotFoundError):
     print(
         "This computer does not appear to be a PiCar-X system (robot_hat is not present). Shadowing hardware calls with substitute functions."
     )
-    from .sim_robot_hat import *
+    from sim_robot_hat import *
 
 import os
 import time
 import numpy as np
+
+from interpreter import GreyscaleInterpreter
+from maneuver import Maneuver
 
 logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%H:%M:%S")
@@ -91,6 +94,13 @@ class Picarx(object):
         # usage: distance = self.ultrasonic.read()
         tring, echo = ultrasonic_pins
         self.ultrasonic = Ultrasonic(Pin(tring), Pin(echo))
+
+        # Interpreter
+        self.gs_interpreter = GreyscaleInterpreter(1000, 500, "light")
+
+        # Maneuver
+        self.maneuver = Maneuver(self)
+
         # at exit
         atexit.register(self.cleanup)
 
@@ -105,7 +115,7 @@ class Picarx(object):
         # if speed != 0:
         # speed = int(speed / 2) + 50
         speed = speed - self.cali_speed_value[motor]
-        logging.debug(f"{motor+1}: {speed}")
+        # logging.debug(f"{motor+1}: {speed}")
         if direction < 0:
             self.motor_direction_pins[motor].high()
             self.motor_speed_pins[motor].pulse_width_percent(speed)
@@ -236,9 +246,15 @@ class Picarx(object):
         return str(self.grayscale.get_line_status(gm_val_list))
 
     def print_grayscale_data(self):
-        print(self.get_grayscale_data())
+        data = self.get_grayscale_data()
+        print(data)
+        print(self.interpreter.follow_path(data))
 
-if __name__ == "__main__":
-    px = Picarx()
-    px.forward(50)
-    time.sleep(1)
+    def follow_path(self):
+        return
+
+
+
+
+
+

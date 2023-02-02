@@ -13,7 +13,7 @@ import atexit
 SPEED = 100
 ANGLE = 0
 
-RANGE = 10000
+RANGE = 100
 
 
 def main():
@@ -30,4 +30,3 @@ def main():
 if __name__ == "__main__":
 
     px = main()
-    atexit.register(px.stop)
