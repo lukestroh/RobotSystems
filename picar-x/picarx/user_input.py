@@ -6,13 +6,12 @@ Luke Strohbehn
 import picarx_improved as pcx
 
 
-
-
 COMMAND_DICT: dict = {
     "1": "parallel_park",
     "2": "k_turn",
     "3": "follow line"
 }
+
 
 
 def main():
@@ -26,12 +25,14 @@ def main():
 
     comm = int(input("Please enter the number of the command and hit enter:\n").strip())
 
+
     if comm == 1:
         px.maneuver.parallel_park()
     elif comm == 2:
         px.maneuver.k_turn()
     elif comm == 3:
         px.maneuver.follow_line()
+
 
     return
 
