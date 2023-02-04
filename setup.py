@@ -12,8 +12,8 @@ setup(
     name="RobotSystems",
     version="0.0.1",
     long_description=long_description,
-    packages=["picarx"],
+    # packages=["picarx"],
     author="Luke Strohbehn",
-    # packages=find_packages(exclude=["tests*"]),
+    packages=find_packages(exclude=["tests*", "example*"]),
     install_requires=install_requires
 )
