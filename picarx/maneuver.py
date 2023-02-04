@@ -15,6 +15,22 @@ class Maneuver():
         self.px = px
         pass
 
+    
+    def forward_backward(self, forward=True, angle=0):
+        if forward:
+            for i in range(self.range):
+                self.px.set_dir_servo_angle(angle)
+                self.px.forward(self.maneuver_speed)
+                time.sleep(0.001)
+
+            self.px.stop()
+
+        else:
+            for i in range(self.range):
+                self.px.set_dir_servo_angle(angle)
+                self.px.backward(self.maneuver_speed)
+        return
+
     def k_turn(self, street_side: str = "right"):
         angle = self.maneuver_angle
         if street_side == "left":
@@ -97,5 +113,8 @@ class Maneuver():
             self.px.stop()
 
         return
+
+
+
 
     

@@ -7,7 +7,7 @@ Luke Strohbehn
 
 # import picarx_improved as pcx
 from numpy import mean
-import scipy as sp
+# import scipy as sp
 from typing import List
 from collections import deque
 import logging
