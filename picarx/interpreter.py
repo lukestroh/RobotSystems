@@ -7,6 +7,7 @@ Luke Strohbehn
 
 # import picarx_improved as pcx
 from numpy import mean
+
 # import scipy as sp
 from typing import List
 from collections import deque
@@ -36,7 +37,6 @@ class GreyscaleInterpreter:
         self.left_deq.append(greyscale_data[0])
         self.mid_deq.append(greyscale_data[1])
         self.right_deq.append(greyscale_data[2])
-                
 
     def get_steering_scale(self, greyscale_data: List[int]) -> float:
         self.left_curr = greyscale_data[0]
@@ -59,7 +59,7 @@ class GreyscaleInterpreter:
         self.mid_deq.append(self.mid_curr)
         self.right_deq.append(self.right_curr)
 
-         # off track case
+        # off track case
         if left_diff > self.deriv_thresh and right_diff > self.deriv_thresh and mid_diff > self.deriv_thresh:
             return None
 
@@ -72,14 +72,12 @@ class GreyscaleInterpreter:
         logging.debug(f"{scaled_diff}")
 
         return scaled_diff
-    
-    
+
     def map_steer_idx_to_angle(self, steer_scale):
         if steer_scale is None:
             pass
         else:
             return steer_scale * self.max_steer_angle
-
 
     def follow_line(self, greyscale_data: List[int]):
         steer_scale = self.get_steering_scale(greyscale_data)
@@ -90,10 +88,9 @@ class GreyscaleInterpreter:
             return steer_angle
 
 
-
-
 def main():
     return
+
 
 if __name__ == "__main__":
     main()
