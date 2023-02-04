@@ -253,9 +253,3 @@ class Picarx(object):
 
     def follow_path(self):
         return
-
-
-
-
-
-

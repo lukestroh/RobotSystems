@@ -1,10 +1,10 @@
 .PHONY: black
 black:
-	black ./picar-x --line-length=120
+	black ./picarx --line-length=120
 
 .PHONY: flake8
 flake8:
-	flake8 ./picar-x --count --show-source --statistics
+	flake8 ./picarx --count --show-source --statistics
 
 .PHONY: format
 format:
