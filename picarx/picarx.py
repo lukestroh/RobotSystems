@@ -14,14 +14,16 @@ except (ImportError, ModuleNotFoundError):
     print(
         "This computer does not appear to be a PiCar-X system (robot_hat is not present). Shadowing hardware calls with substitute functions."
     )
-    from picarx.sim_robot_hat import *
+    from sim_robot_hat import *
 
 import os
 import time
 import numpy as np
 
-from picarx.interpreter import GreyscaleInterpreter
-from picarx.maneuver import Maneuver
+from sensor import Sensor
+from interpreter import GreyscaleInterpreter
+from maneuver import Maneuver
+
 
 logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%H:%M:%S")
@@ -90,14 +92,14 @@ class Picarx(object):
         # grayscale module init
         # usage: self.grayscale.get_grayscale_data()
         adc0, adc1, adc2 = grayscale_pins
-        self.grayscale = Grayscale_Module(adc0, adc1, adc2, reference=1000)
+        self.grayscale = Sensor.GrayscaleSensor(adc0, adc1, adc2, reference=1000)
         # ultrasonic init
         # usage: distance = self.ultrasonic.read()
         tring, echo = ultrasonic_pins
         self.ultrasonic = Ultrasonic(Pin(tring), Pin(echo))
 
         # Interpreter
-        self.gs_interpreter = GreyscaleInterpreter(1000, 500, "light")
+        self.gs_interpreter = GreyscaleInterpreter(light_idx=1000, dark_idx=500, polarity="light")
 
         # Maneuver
         self.maneuver = Maneuver(self)
