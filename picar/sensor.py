@@ -4,13 +4,13 @@ sensors.py
 Luke Strohbehn
 """
 from picar.utils.basic import _Basic_class
+
 # from motor import Motor
 import time
 from picar.utils.bus import GrayscaleBus, UltrasonicBus
 from typing import Any
 
 from smbus import SMBus
-
 
 
 class I2C(_Basic_class):
@@ -24,7 +24,9 @@ class I2C(_Basic_class):
                     continue
             else:
                 return False
+
         return wrapper
+
     def __init__(self, *args, **kargs):  # *args表示位置参数（形式参数），可无，； **kargs表示默认值参数，可无。
         super().__init__()
         self._bus = 1
@@ -177,6 +179,7 @@ class I2C(_Basic_class):
     def writeto_mem(self, addr, memaddr, data):
         self.mem_write(data, addr, memaddr)
 
+
 class ADC(I2C):
     def __init__(self, chn):  # 参数，通道数，树莓派扩展板上有8个adc通道分别为"A0, A1, A2, A3, A4, A5, A6, A7"
         super().__init__()
@@ -213,7 +216,8 @@ class ADC(I2C):
     def read_voltage(self):  # 将读取的数据转化为电压值（0~3.3V）
         return self.read * 3.3 / 4095
 
-class UltrasonicSensor():
+
+class UltrasonicSensor:
     def __init__(self, trig, echo, timeout=0.02):
         self.trig = trig
         self.echo = echo
@@ -229,11 +233,11 @@ class UltrasonicSensor():
         pulse_end = 0
         pulse_start = 0
         timeout_start = time.time()
-        while self.echo.value()==0:
+        while self.echo.value() == 0:
             pulse_start = time.time()
             if pulse_start - timeout_start > self.timeout:
                 return -1
-        while self.echo.value()==1:
+        while self.echo.value() == 1:
             pulse_end = time.time()
             if pulse_end - timeout_start > self.timeout:
                 return -1
@@ -247,17 +251,17 @@ class UltrasonicSensor():
             if a != -1:
                 return a
         return -1
-    
-    def write_interpreter_bus(self, message:Any):
+
+    def write_interpreter_bus(self, message: Any):
         return self.interpreter_bus.write(message)
-    
+
     def run(self, time_delay: float):
         while True:
             self.interpreter_bus.write(self.read())
             time.sleep(time_delay)
-    
 
-class GrayscaleSensor():
+
+class GrayscaleSensor:
     def __init__(self, px, pin0, pin1, pin2, reference=1000):
         self.chn_0 = ADC(pin0)
         self.chn_1 = ADC(pin1)
@@ -271,26 +275,23 @@ class GrayscaleSensor():
         adc_value_list.append(self.chn_1.read())
         adc_value_list.append(self.chn_2.read())
         return adc_value_list
-    
-    def write_interpreter_bus(self, message:Any):
+
+    def write_interpreter_bus(self, message: Any):
         return self.interpreter_bus.write(message)
-        
-    
+
     def run(self, time_delay: float):
         while True:
             self.write_interpreter_bus(self.get_grayscale_data())
             time.sleep(time_delay)
 
-        
-
-
 
 def main():
     grayscale_pins: list = ["A0", "A1", "A2"]
- 
+
     greyscale = GrayscaleSensor(grayscale_pins[0], grayscale_pins[1], grayscale_pins[2])
     ultrasonic = Ultrasonic()
     return
+
 
 if __name__ == "__main__":
     main()

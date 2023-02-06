@@ -20,7 +20,6 @@ try:
     # import picar
     from picar.motor import Pin
 
-
     from picar.sensor import GrayscaleSensor, UltrasonicSensor
     from picar.interpreter import GrayscaleInterpreter
     from picar.maneuver import Maneuver
@@ -39,12 +38,9 @@ except (ImportError, ModuleNotFoundError):
     from picar.sim_robot_hat import *
 
 
-
 import os
 import time
 import numpy as np
-
-
 
 
 logging_format = "%(asctime)s: %(message)s"
@@ -64,9 +60,6 @@ class Picarx(object):
     PERIOD = 4095
     PRESCALER = 10
     TIMEOUT = 0.02
-
-    
-    
 
     # servo_pins: direction_servo, camera_servo_1, camera_servo_2
     # motor_pins: left_swicth, right_swicth, left_pwm, right_pwm
@@ -117,7 +110,6 @@ class Picarx(object):
         for pin in self.motor_speed_pins:
             pin.period(self.PERIOD)
             pin.prescaler(self.PRESCALER)
-
 
         # Sensor
         adc0, adc1, adc2 = grayscale_pins

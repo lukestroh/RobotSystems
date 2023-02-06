@@ -6,5 +6,5 @@ def reset_mcu():
     mcu_reset = Pin("MCURST")
     mcu_reset.off()
     time.sleep(0.001)
-    mcu_reset.on() 
-    time.sleep(0.01)  
+    mcu_reset.on()
+    time.sleep(0.01)

@@ -215,6 +215,7 @@ class Pin(_Basic_class):
         def __init__(self):
             pass
 
+
 def _retry_wrapper(self, func):
     def wrapper(self, *arg, **kwargs):
         for i in range(self.RETRY):
@@ -227,7 +228,6 @@ def _retry_wrapper(self, func):
             return False
 
     return wrapper
-
 
 
 class PWM(I2C):
@@ -336,10 +336,11 @@ class PWM(I2C):
             pulse_width = temp * timer[self.timer]["arr"]
             self.pulse_width(pulse_width)
 
+
 class Servo(_Basic_class):
     def __init__(self, pwm):
         super().__init__()
-        
+
         # Servo
         self.MAX_PW = 2500
         self.MIN_PW = 500

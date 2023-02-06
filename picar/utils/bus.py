@@ -8,11 +8,13 @@ from picar.utils.basicbus import BasicBus
 from typing import Any
 import time
 
+
 class ControllerBus(BasicBus):
     def __init__(self) -> None:
         super().__init__()
 
         pass
+
 
 class GrayscaleBus(BasicBus):
     def __init__(self) -> None:
@@ -21,12 +23,9 @@ class GrayscaleBus(BasicBus):
 
     def run(self, time_limit):
         while self.message:
-            
 
             time.sleep(time_limit)
         return
-
-        
 
 
 class CameraBus(BasicBus):
@@ -49,4 +48,3 @@ class InterpreterBus(BasicBus):
         # make a dictionary for each of the types of data, (and give them priority numbers?)
 
         pass
-        
