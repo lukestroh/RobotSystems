@@ -1,12 +1,34 @@
 import logging
 from logdecorator import log_on_start, log_on_end, log_on_error
-import picarx
+
 
 import atexit
 
+# try:
+#     from robot_hat import *
+#     from robot_hat.utils import reset_mcu
+
+#     reset_mcu()
+#     time.sleep(0.01)
+# except (ImportError, ModuleNotFoundError):
+#     print(
+#         "This computer does not appear to be a PiCar-X system (robot_hat is not present). Shadowing hardware calls with substitute functions."
+#     )
+#     from sim_robot_hat import *
+
 try:
-    from robot_hat import *
-    from robot_hat.utils import reset_mcu
+    # import picar
+    from picar.motor import Pin
+
+
+    from picar.sensor import GrayscaleSensor, UltrasonicSensor
+    from picar.interpreter import GrayscaleInterpreter
+    from picar.maneuver import Maneuver
+
+    from picar.utils.scheduler import Scheduler
+    from picar.utils.bus import GrayscaleBus, UltrasonicBus, InterpreterBus
+
+    from picar.utils import reset_mcu
 
     reset_mcu()
     time.sleep(0.01)
@@ -14,14 +36,16 @@ except (ImportError, ModuleNotFoundError):
     print(
         "This computer does not appear to be a PiCar-X system (robot_hat is not present). Shadowing hardware calls with substitute functions."
     )
-    from picarx.sim_robot_hat import *
+    from picar.sim_robot_hat import *
+
+
 
 import os
 import time
 import numpy as np
 
-from picarx.interpreter import GreyscaleInterpreter
-from picarx.maneuver import Maneuver
+
+
 
 logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%H:%M:%S")
@@ -41,6 +65,9 @@ class Picarx(object):
     PRESCALER = 10
     TIMEOUT = 0.02
 
+    
+    
+
     # servo_pins: direction_servo, camera_servo_1, camera_servo_2
     # motor_pins: left_swicth, right_swicth, left_pwm, right_pwm
     # grayscale_pins: 3 adc channels
@@ -55,6 +82,9 @@ class Picarx(object):
         ultrasonic_pins: list = ["D2", "D3"],
         config: str = config_file,
     ):
+        # user input dictionary
+        self.COMMAND_DICT: dict = {"1": "parallel_park", "2": "k_turn", "3": "follow line"}
+        self.ACTIVE_COMMAND: str
         # Car dimensions
         self.LENGTH_CHASSIS: float = 9.36625  # cm 3 + 11/16 in
         self.WIDTH_BACK_WHEELBASE: float = 11.43  # cm 4.5 in
@@ -87,23 +117,34 @@ class Picarx(object):
         for pin in self.motor_speed_pins:
             pin.period(self.PERIOD)
             pin.prescaler(self.PRESCALER)
-        # grayscale module init
-        # usage: self.grayscale.get_grayscale_data()
+
+
+        # Sensor
         adc0, adc1, adc2 = grayscale_pins
-        self.grayscale = Grayscale_Module(adc0, adc1, adc2, reference=1000)
+        self.grayscale_sensor = GrayscaleSensor(self, adc0, adc1, adc2, reference=1000)
         # ultrasonic init
         # usage: distance = self.ultrasonic.read()
         tring, echo = ultrasonic_pins
-        self.ultrasonic = Ultrasonic(Pin(tring), Pin(echo))
+        self.ultrasonic = UltrasonicSensor(Pin(tring), Pin(echo))
+
+        # Bus
+        self.grayscale_bus = GrayscaleBus()
+        self.ultrasonic_bus = UltrasonicBus()
+
+        self.interpreter_bus = InterpreterBus()
+
+        # Scheduler
+        self.scheduler = Scheduler(self)
 
         # Interpreter
-        self.gs_interpreter = GreyscaleInterpreter(1000, 500, "light")
+        self.gs_interpreter = GrayscaleInterpreter(self, light_idx=1000, dark_idx=500, polarity="light")
 
         # Maneuver
         self.maneuver = Maneuver(self)
 
         # at exit
         atexit.register(self.cleanup)
+        return
 
     def set_motor_speed(self, motor, speed):
         # global cali_speed_value,cali_dir_value
@@ -241,10 +282,10 @@ class Picarx(object):
         self.get_grayscale_reference = value
 
     def get_grayscale_data(self):
-        return list.copy(self.grayscale.get_grayscale_data())
+        return list.copy(self.grayscale_sensor.get_grayscale_data())
 
     def get_line_status(self, gm_val_list):
-        return str(self.grayscale.get_line_status(gm_val_list))
+        return str(self.grayscale_sensor.get_line_status(gm_val_list))
 
     def print_grayscale_data(self):
         data = self.get_grayscale_data()

@@ -12,14 +12,17 @@ from numpy import mean
 from typing import List
 from collections import deque
 import logging
+import time
+
+
 
 logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%H:%M:%S")
 logging.getLogger().setLevel(logging.DEBUG)
 
 
-class GreyscaleInterpreter:
-    def __init__(self, light_idx: int, dark_idx: int, polarity: str = "dark") -> None:
+class GrayscaleInterpreter:
+    def __init__(self, px, light_idx: int, dark_idx: int, polarity: str = "dark") -> None:
         self.light_idx = light_idx
         self.dark_idx = dark_idx
         self.polarity = polarity
@@ -32,6 +35,10 @@ class GreyscaleInterpreter:
         self.left_deq = deque([], maxlen=self.deque_len)
         self.mid_deq = deque([], maxlen=self.deque_len)
         self.right_deq = deque([], maxlen=self.deque_len)
+
+        # Bus
+        self.grayscale_bus = px.grayscale_bus
+        self.interpreter_bus = px.interpreter_bus
 
     def set_initial_gs_vals(self, greyscale_data: List[int]) -> None:
         self.left_deq.append(greyscale_data[0])
@@ -86,6 +93,20 @@ class GreyscaleInterpreter:
         else:
             steer_angle = self.map_steer_idx_to_angle(steer_scale)
             return steer_angle
+        
+
+    def read_sensor_bus(self):
+        return self.grayscale_bus.read()
+    
+    def write_interpreter_bus(self, message):
+        return self.interpreter_bus.write(message)
+    
+    def run(self, time_delay):
+        while True:
+            self.write_interpreter_bus(self.read_sensor_bus())
+            time.sleep(time_delay)
+
+
 
 
 def main():

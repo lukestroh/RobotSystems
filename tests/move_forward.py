@@ -2,17 +2,22 @@
 """
 move_forward.py
 """
-from picarx import picarx
+from picar import picarx
+import time
 
 
 def main():
-    px=picarx.Picarx()
-    px.forward(40)
+    try:
+        px=picarx.Picarx()
+        px.forward(40)
+        time.sleep(5)
+        px.stop()
+        return 1
+    except Exception as e:
+        print(e)
+        return 0
 
 
-
-
-    return
 
 if __name__ == "__main__":
     main()
