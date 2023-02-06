@@ -3,8 +3,8 @@
 motors.py
 Luke Strohbehn
 """
-from basic import _Basic_class
-from sensor import I2C
+from picar.utils.basic import _Basic_class
+from picar.sensor import I2C
 import RPi.GPIO as GPIO
 import smbus
 

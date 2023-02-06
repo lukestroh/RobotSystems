@@ -4,14 +4,28 @@ bus.py
 Luke Strohbehn
 """
 
-from basicbus import BasicBus
+from picar.utils.basicbus import BasicBus
+import time
 
-
-class GreyscaleBus(BasicBus):
+class ControllerBus(BasicBus):
     def __init__(self) -> None:
         super().__init__()
 
         pass
+
+class GreyscaleBus(BasicBus):
+    def __init__(self) -> None:
+        super().__init__()
+        return
+
+    def run(self, time_limit):
+        while self.message:
+            
+
+            time.sleep(time_limit)
+        return
+
+        
 
 
 class CameraBus(BasicBus):
@@ -21,13 +35,14 @@ class CameraBus(BasicBus):
         pass
 
 
-class SonarBus(BasicBus):
+class UltrasonicBus(BasicBus):
     def __init__(self) -> None:
         super().__init__()
 
         pass
 
-class UltrasonicBus(BasicBus):
+
+class InterpreterBus(BasicBus):
     def __init__(self) -> None:
         super().__init__()
 

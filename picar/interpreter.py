@@ -12,6 +12,7 @@ from numpy import mean
 from typing import List
 from collections import deque
 import logging
+from bus import GreyscaleBus, InterpreterBus
 
 
 
@@ -21,7 +22,7 @@ logging.getLogger().setLevel(logging.DEBUG)
 
 
 class GreyscaleInterpreter:
-    def __init__(self, light_idx: int, dark_idx: int, polarity: str = "dark") -> None:
+    def __init__(self, px, light_idx: int, dark_idx: int, polarity: str = "dark") -> None:
         self.light_idx = light_idx
         self.dark_idx = dark_idx
         self.polarity = polarity
@@ -34,6 +35,10 @@ class GreyscaleInterpreter:
         self.left_deq = deque([], maxlen=self.deque_len)
         self.mid_deq = deque([], maxlen=self.deque_len)
         self.right_deq = deque([], maxlen=self.deque_len)
+
+        # Bus
+        self.sensor_bus = px.sensor_bus
+        self.interpreter_bus = px.sensor_bus
 
     def set_initial_gs_vals(self, greyscale_data: List[int]) -> None:
         self.left_deq.append(greyscale_data[0])
@@ -88,6 +93,14 @@ class GreyscaleInterpreter:
         else:
             steer_angle = self.map_steer_idx_to_angle(steer_scale)
             return steer_angle
+        
+
+    def read_sensor_bus(self):
+        return self.sensor_bus.read()
+    
+    def write_interpreter_bus(self, message):
+        return self.interpreter_bus.write(message)
+
 
 
 def main():

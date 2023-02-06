@@ -1,6 +1,6 @@
 import logging
 from logdecorator import log_on_start, log_on_end, log_on_error
-import picarx
+
 
 import atexit
 
@@ -20,9 +20,13 @@ import os
 import time
 import numpy as np
 
-from sensor import Sensor
-from interpreter import GreyscaleInterpreter
-from maneuver import Maneuver
+# import picar
+from picar.sensor import GrayscaleSensor
+from picar.interpreter import GreyscaleInterpreter
+from picar.maneuver import Maneuver
+
+from picar.utils.scheduler import Scheduler
+from picar.utils.bus import GreyscaleBus
 
 
 logging_format = "%(asctime)s: %(message)s"
@@ -89,17 +93,18 @@ class Picarx(object):
         for pin in self.motor_speed_pins:
             pin.period(self.PERIOD)
             pin.prescaler(self.PRESCALER)
-        # grayscale module init
-        # usage: self.grayscale.get_grayscale_data()
+
+
+        
         adc0, adc1, adc2 = grayscale_pins
-        self.grayscale = Sensor.GrayscaleSensor(adc0, adc1, adc2, reference=1000)
+        self.grayscale = GrayscaleSensor(self, adc0, adc1, adc2, reference=1000)
         # ultrasonic init
         # usage: distance = self.ultrasonic.read()
         tring, echo = ultrasonic_pins
         self.ultrasonic = Ultrasonic(Pin(tring), Pin(echo))
 
         # Interpreter
-        self.gs_interpreter = GreyscaleInterpreter(light_idx=1000, dark_idx=500, polarity="light")
+        self.gs_interpreter = GreyscaleInterpreter(self, light_idx=1000, dark_idx=500, polarity="light")
 
         # Maneuver
         self.maneuver = Maneuver(self)
