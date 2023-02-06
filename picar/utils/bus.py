@@ -5,6 +5,7 @@ Luke Strohbehn
 """
 
 from picar.utils.basicbus import BasicBus
+from typing import Any
 import time
 
 class ControllerBus(BasicBus):
@@ -13,7 +14,7 @@ class ControllerBus(BasicBus):
 
         pass
 
-class GreyscaleBus(BasicBus):
+class GrayscaleBus(BasicBus):
     def __init__(self) -> None:
         super().__init__()
         return
@@ -38,7 +39,6 @@ class CameraBus(BasicBus):
 class UltrasonicBus(BasicBus):
     def __init__(self) -> None:
         super().__init__()
-
         pass
 
 
@@ -46,4 +46,7 @@ class InterpreterBus(BasicBus):
     def __init__(self) -> None:
         super().__init__()
 
+        # make a dictionary for each of the types of data, (and give them priority numbers?)
+
         pass
+        

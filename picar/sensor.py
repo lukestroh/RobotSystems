@@ -6,7 +6,7 @@ Luke Strohbehn
 from picar.utils.basic import _Basic_class
 # from motor import Motor
 import time
-from picar.utils.bus import GreyscaleBus, UltrasonicBus
+from picar.utils.bus import GrayscaleBus, UltrasonicBus
 from typing import Any
 
 from smbus import SMBus
@@ -29,6 +29,11 @@ class I2C(_Basic_class):
         super().__init__()
         self._bus = 1
         self._smbus = SMBus(self._bus)
+
+        # I2C
+        self.MASTER = 0
+        self.SLAVE = 1
+        self.RETRY = 5
 
     @_retry_wrapper
     def _i2c_write_byte(self, addr, data):  # i2C 写系列函数
@@ -208,7 +213,7 @@ class ADC(I2C):
     def read_voltage(self):  # 将读取的数据转化为电压值（0~3.3V）
         return self.read * 3.3 / 4095
 
-class Ultrasonic():
+class UltrasonicSensor():
     def __init__(self, trig, echo, timeout=0.02):
         self.trig = trig
         self.echo = echo
@@ -243,8 +248,13 @@ class Ultrasonic():
                 return a
         return -1
     
-    def read_bus(self):
-        return
+    def write_interpreter_bus(self, message:Any):
+        return self.interpreter_bus.write(message)
+    
+    def run(self, time_delay: float):
+        while True:
+            self.interpreter_bus.write(self.read())
+            time.sleep(time_delay)
     
 
 class GrayscaleSensor():
@@ -263,8 +273,15 @@ class GrayscaleSensor():
         return adc_value_list
     
     def write_interpreter_bus(self, message:Any):
-        self.interpreter_bus.write(message)
-        return
+        return self.interpreter_bus.write(message)
+        
+    
+    def run(self, time_delay: float):
+        while True:
+            self.write_interpreter_bus(self.get_grayscale_data())
+            time.sleep(time_delay)
+
+        
 
 
 
