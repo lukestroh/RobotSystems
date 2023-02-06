@@ -15,7 +15,6 @@ import logging
 import time
 
 
-
 logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%H:%M:%S")
 logging.getLogger().setLevel(logging.DEBUG)
@@ -93,20 +92,17 @@ class GrayscaleInterpreter:
         else:
             steer_angle = self.map_steer_idx_to_angle(steer_scale)
             return steer_angle
-        
 
     def read_sensor_bus(self):
         return self.grayscale_bus.read()
-    
+
     def write_interpreter_bus(self, message):
         return self.interpreter_bus.write(message)
-    
+
     def run(self, time_delay):
         while True:
             self.write_interpreter_bus(self.read_sensor_bus())
             time.sleep(time_delay)
-
-
 
 
 def main():

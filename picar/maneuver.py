@@ -7,7 +7,7 @@ import time
 import logging
 
 
-class Maneuver():
+class Maneuver:
     def __init__(self, px) -> None:
         self.maneuver_angle = 30
         self.maneuver_speed = 40
