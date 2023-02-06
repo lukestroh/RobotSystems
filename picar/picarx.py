@@ -221,7 +221,7 @@ class Picarx(object):
         self.set_motor_speed(1, speed)
         self.set_motor_speed(2, speed)
 
-    @log_on_error(logging.DEBUG, "Error in forward motion.")
+    @log_on_error(logging.DEBUG, "Error in backward motion.")
     def backward(self, speed):
         current_angle = self.dir_current_angle
         if current_angle != 0:
