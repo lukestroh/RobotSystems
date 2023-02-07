@@ -14,6 +14,8 @@ from collections import deque
 import logging
 import time
 
+from picar.utils.bus import InterpreterBus
+
 
 logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%H:%M:%S")
@@ -37,7 +39,7 @@ class GrayscaleInterpreter:
 
         # Bus
         self.grayscale_bus = px.grayscale_bus
-        self.interpreter_bus = px.interpreter_bus
+        self.interpreter_bus = px.interpreter_bus = InterpreterBus()
 
     def set_initial_gs_vals(self, greyscale_data: List[int]) -> None:
         self.left_deq.append(greyscale_data[0])

@@ -222,8 +222,8 @@ class UltrasonicSensor:
         self.trig = trig
         self.echo = echo
         self.timeout = timeout
-        px.interpreter_bus = UltrasonicBus()
-        self.interpreter_bus = px.interpreter_bus
+        self.ultrasonic_bus = px.ultrasonic_bus = UltrasonicBus()
+        return
 
     def _read(self):
         self.trig.low()
@@ -268,8 +268,7 @@ class GrayscaleSensor:
         self.chn_1 = ADC(pin1)
         self.chn_2 = ADC(pin2)
         self.reference = reference
-        px.grayscale_bus = GrayscaleBus()
-        self.grayscale_bus = px.grayscale_bus
+        self.grayscale_bus = px.grayscale_bus = GrayscaleBus()
 
     def get_grayscale_data(self):
         adc_value_list = []
