@@ -218,11 +218,12 @@ class ADC(I2C):
 
 
 class UltrasonicSensor:
-    def __init__(self, trig, echo, timeout=0.02):
+    def __init__(self, px, trig, echo, timeout=0.02):
         self.trig = trig
         self.echo = echo
         self.timeout = timeout
-        self.bus = UltrasonicBus()
+        self.ultrasonic_bus = px.ultrasonic_bus = UltrasonicBus()
+        return
 
     def _read(self):
         self.trig.low()
@@ -267,7 +268,7 @@ class GrayscaleSensor:
         self.chn_1 = ADC(pin1)
         self.chn_2 = ADC(pin2)
         self.reference = reference
-        self.interpreter_bus = px.interpreter_bus
+        self.grayscale_bus = px.grayscale_bus = GrayscaleBus()
 
     def get_grayscale_data(self):
         adc_value_list = []
@@ -277,7 +278,7 @@ class GrayscaleSensor:
         return adc_value_list
 
     def write_interpreter_bus(self, message: Any):
-        return self.interpreter_bus.write(message)
+        return self.grayscale_bus.write(message)
 
     def run(self, time_delay: float):
         while True:
@@ -289,7 +290,7 @@ def main():
     grayscale_pins: list = ["A0", "A1", "A2"]
 
     greyscale = GrayscaleSensor(grayscale_pins[0], grayscale_pins[1], grayscale_pins[2])
-    ultrasonic = Ultrasonic()
+    # ultrasonic = Ultrasonic()
     return
 
 

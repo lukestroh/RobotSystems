@@ -43,9 +43,6 @@ except (ImportError, ModuleNotFoundError):
     from picar.sim_robot_hat import *
 
 
-
-
-
 logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%H:%M:%S")
 logging.getLogger().setLevel(logging.DEBUG)
@@ -114,6 +111,11 @@ class Picarx(object):
             pin.period(self.PERIOD)
             pin.prescaler(self.PRESCALER)
 
+        # Bus (bus instantiation is in each sensor/interpreter class)
+        self.grayscale_bus: GrayscaleBus
+        self.ultrasonic_bus: UltrasonicBus
+        self.interpreter_bus: InterpreterBus
+
         # Sensor
         adc0, adc1, adc2 = grayscale_pins
         self.grayscale_sensor = GrayscaleSensor(self, adc0, adc1, adc2, reference=1000)
@@ -121,12 +123,6 @@ class Picarx(object):
         # usage: distance = self.ultrasonic.read()
         tring, echo = ultrasonic_pins
         self.ultrasonic = UltrasonicSensor(Pin(tring), Pin(echo))
-
-        # Bus
-        self.grayscale_bus = GrayscaleBus()
-        self.ultrasonic_bus = UltrasonicBus()
-
-        self.interpreter_bus = InterpreterBus()
 
         # Scheduler
         self.scheduler = Scheduler(self)
