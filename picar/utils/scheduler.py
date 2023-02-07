@@ -12,6 +12,7 @@ class Scheduler:
         grayscale_delay = 0.5
         with cf.ThreadPoolExecutor(max_workers=3) as executor:
             eSensor = executor.submit(self.px.grayscale_sensor.run, self.px.grayscale_bus.run, grayscale_delay)
+            # print(eSensor)
 
             # eInterpreter = executor.submit(interpreter_function, sensor_values_bus, interpreter_delay)
 
@@ -23,7 +24,7 @@ class Scheduler:
 
         return
 
-    def run_until_complete(self):
+    def run_until_complete(self, user_input):
         while True:
-            self.run()
+            self.run(user_input)
         return

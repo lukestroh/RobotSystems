@@ -4,17 +4,19 @@ main.py:
     Main program for running with user input
 Luke Strohbehn
 """
-import picar
+
 import picar.picarx as pcx
+
+from picar.user import user_input
 
 
 
 def main():
     px = pcx.Picarx()
 
-    user_input = picar.user_input(px)
+    _user_input = user_input(px)
 
-    px.utils.scheduler.run(user_input)
+    px.scheduler.run(_user_input)
 
 
 

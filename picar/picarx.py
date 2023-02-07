@@ -127,7 +127,7 @@ class Picarx(object):
         # ultrasonic init
         # usage: distance = self.ultrasonic.read()
         tring, echo = ultrasonic_pins
-        self.ultrasonic = UltrasonicSensor(Pin(tring), Pin(echo))
+        self.ultrasonic = UltrasonicSensor(self, Pin(tring), Pin(echo))
         
         # Interpreter
         self.gs_interpreter = GrayscaleInterpreter(self, light_idx=1000, dark_idx=500, polarity="light")
