@@ -7,7 +7,7 @@ from picar.utils.basic import _Basic_class
 from picar.sensor import I2C
 import RPi.GPIO as GPIO
 import smbus
-
+import math
 
 class Pin(_Basic_class):
     def __init__(self, *value):
@@ -119,7 +119,7 @@ class Pin(_Basic_class):
         else:
             self._dict = self._dict_2
 
-    def init(self, mode, pull=PULL_NONE):
+    def init(self, mode, pull=None):
         self._pull = pull
         self._mode = mode
         if mode != None:
@@ -216,20 +216,6 @@ class Pin(_Basic_class):
             pass
 
 
-def _retry_wrapper(self, func):
-    def wrapper(self, *arg, **kwargs):
-        for i in range(self.RETRY):
-            try:
-                return func(self, *arg, **kwargs)
-            except OSError:
-                self._debug("OSError: %s" % func.__name__)
-                continue
-        else:
-            return False
-
-    return wrapper
-
-
 class PWM(I2C):
     def __init__(self, channel, debug="critical"):
         super().__init__()
@@ -240,6 +226,7 @@ class PWM(I2C):
         self.REG_ARR = 0x44
         self.ADDR = 0x14
         self.CLOCK = 72000000
+    
 
         if isinstance(channel, str):
             if channel.startswith("P"):
@@ -259,6 +246,7 @@ class PWM(I2C):
         self._debug("PWM address: {:02X}".format(self.ADDR))
         self.channel = channel
         self.timer = int(channel / 4)
+        self.timer_dict: dict = [{"arr": 0}] * 4
         self.bus = smbus.SMBus(1)
         self._pulse_width = 0
         self._freq = 50
@@ -309,13 +297,14 @@ class PWM(I2C):
 
     def period(self, *arr):
         # global timer
+        # self.timer_dict[self.timer] = 0
         if len(arr) == 0:
-            return timer[self.timer]["arr"]
+            return self.timer_dict[self.timer]["arr"]
         else:
-            timer[self.timer]["arr"] = int(arr[0]) - 1
+            self.timer_dict[self.timer]["arr"] = int(arr[0]) - 1
             reg = self.REG_ARR + self.timer
-            self._debug("Set arr to: %s" % timer[self.timer]["arr"])
-            self.i2c_write(reg, timer[self.timer]["arr"])
+            self._debug("Set arr to: %s" % self.timer_dict[self.timer]["arr"])
+            self.i2c_write(reg, self.timer_dict[self.timer]["arr"])
 
     def pulse_width(self, *pulse_width):
         if len(pulse_width) == 0:
@@ -333,7 +322,7 @@ class PWM(I2C):
             self._pulse_width_percent = pulse_width_percent[0]
             temp = self._pulse_width_percent / 100.0
             # print(temp)
-            pulse_width = temp * timer[self.timer]["arr"]
+            pulse_width = temp * self.timer_dict[self.timer]["arr"]
             self.pulse_width(pulse_width)
 
 
