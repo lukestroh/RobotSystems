@@ -133,3 +133,4 @@ dmypy.json
 # custom
 old/
 .vscode/
+RobotSystems.code-workspace

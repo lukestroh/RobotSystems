@@ -21,26 +21,27 @@ import time
 import numpy as np
 
 
-try:
-    # import picar
-    from picar.motor import Pin
+# try:
+#     # import picar
+from picar.motor import Pin, PWM, Servo
 
-    from picar.sensor import GrayscaleSensor, UltrasonicSensor
-    from picar.interpreter import GrayscaleInterpreter
-    from picar.maneuver import Maneuver
+from picar.sensor import I2C, GrayscaleSensor, UltrasonicSensor
+from picar.interpreter import GrayscaleInterpreter
+from picar.maneuver import Maneuver
 
-    from picar.utils.scheduler import Scheduler
-    from picar.utils.bus import GrayscaleBus, UltrasonicBus, InterpreterBus
+from picar.utils.scheduler import Scheduler
+from picar.utils.bus import GrayscaleBus, UltrasonicBus, InterpreterBus
 
-    from picar.utils import reset_mcu
+from picar.utils.filedb import fileDB
+from picar.utils.utils import reset_mcu
 
-    reset_mcu()
-    time.sleep(0.01)
-except (ImportError, ModuleNotFoundError):
-    print(
-        "This computer does not appear to be a PiCar-X system (robot_hat is not present). Shadowing hardware calls with substitute functions."
-    )
-    from picar.sim_robot_hat import *
+reset_mcu()
+time.sleep(0.01)
+# except (ImportError, ModuleNotFoundError):
+#     print(
+#         "This computer does not appear to be a PiCar-X system (robot_hat is not present). Shadowing hardware calls with substitute functions."
+#     )
+#     from picar.sim_robot_hat import *
 
 
 
