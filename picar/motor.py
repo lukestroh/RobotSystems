@@ -246,7 +246,7 @@ class PWM(I2C):
         self._debug("PWM address: {:02X}".format(self.ADDR))
         self.channel = channel
         self.timer = int(channel / 4)
-        self.timer_dict: dict = {}
+        self.timer_dict: dict = [{"arr": 0}] * 4
         self.bus = smbus.SMBus(1)
         self._pulse_width = 0
         self._freq = 50
@@ -297,6 +297,7 @@ class PWM(I2C):
 
     def period(self, *arr):
         # global timer
+        # self.timer_dict[self.timer] = 0
         if len(arr) == 0:
             return self.timer_dict[self.timer]["arr"]
         else:

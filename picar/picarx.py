@@ -115,6 +115,13 @@ class Picarx(object):
             pin.period(self.PERIOD)
             pin.prescaler(self.PRESCALER)
 
+
+
+        # need to make it so that each sensor/interpreter/control generates it's own bus so that instantiation works.
+
+        # Interpreter
+        self.gs_interpreter = GrayscaleInterpreter(self, light_idx=1000, dark_idx=500, polarity="light")
+
         # Sensor
         adc0, adc1, adc2 = grayscale_pins
         self.grayscale_sensor = GrayscaleSensor(self, adc0, adc1, adc2, reference=1000)
@@ -131,9 +138,6 @@ class Picarx(object):
 
         # Scheduler
         self.scheduler = Scheduler(self)
-
-        # Interpreter
-        self.gs_interpreter = GrayscaleInterpreter(self, light_idx=1000, dark_idx=500, polarity="light")
 
         # Maneuver
         self.maneuver = Maneuver(self)
