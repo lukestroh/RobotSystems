@@ -44,9 +44,6 @@ time.sleep(0.01)
 #     from picar.sim_robot_hat import *
 
 
-
-
-
 logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%H:%M:%S")
 logging.getLogger().setLevel(logging.DEBUG)
@@ -116,11 +113,13 @@ class Picarx(object):
             pin.prescaler(self.PRESCALER)
 
 
-
         # need to make it so that each sensor/interpreter/control generates it's own bus so that instantiation works.
 
-        # Interpreter
-        self.gs_interpreter = GrayscaleInterpreter(self, light_idx=1000, dark_idx=500, polarity="light")
+        # Bus (bus instantiation is in each sensor/interpreter class)
+        self.grayscale_bus: GrayscaleBus
+        self.ultrasonic_bus: UltrasonicBus
+        self.interpreter_bus: InterpreterBus
+
 
         # Sensor
         adc0, adc1, adc2 = grayscale_pins
@@ -129,16 +128,13 @@ class Picarx(object):
         # usage: distance = self.ultrasonic.read()
         tring, echo = ultrasonic_pins
         self.ultrasonic = UltrasonicSensor(Pin(tring), Pin(echo))
-
-        # Bus
-        self.grayscale_bus = GrayscaleBus()
-        self.ultrasonic_bus = UltrasonicBus()
-
-        self.interpreter_bus = InterpreterBus()
+        
+        # Interpreter
+        self.gs_interpreter = GrayscaleInterpreter(self, light_idx=1000, dark_idx=500, polarity="light")
 
         # Scheduler
         self.scheduler = Scheduler(self)
-
+        
         # Maneuver
         self.maneuver = Maneuver(self)
 
