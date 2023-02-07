@@ -16,6 +16,11 @@ import atexit
 #     )
 #     from sim_robot_hat import *
 
+import os
+import time
+import numpy as np
+
+
 try:
     # import picar
     from picar.motor import Pin
@@ -38,9 +43,7 @@ except (ImportError, ModuleNotFoundError):
     from picar.sim_robot_hat import *
 
 
-import os
-import time
-import numpy as np
+
 
 
 logging_format = "%(asctime)s: %(message)s"
