@@ -1,5 +1,8 @@
 #!/usr/bin/env/python3
-
+"""
+scheduler.py
+Luke Strohbehn
+"""
 import concurrent.futures as cf
 import logging
 
@@ -13,9 +16,18 @@ class Scheduler:
         return
 
     def run(self, user_input):
+        # delays
         grayscale_delay = 0.5
+        interpreter_delay = 0.5
+
+        # executor
         with cf.ThreadPoolExecutor(max_workers=3) as executor:
             eSensor = executor.submit(self.px.grayscale_sensor.run, grayscale_delay)
+            logging.debug(f"eSensor: {eSensor}")
+            
+            interpreter = executor.submit(self.px.interpreter.run, interpreter_delay)
+            logging.debug(f"interpreter: {interpreter}")
+
             for future in cf.as_completed(eSensor):
                 data1 = eSensor[future]
                 logging.debug(f"Data 1: {data1}")
