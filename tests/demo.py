@@ -16,9 +16,9 @@ def main():
 
     _user_input = user_input(px)
 
+
+
     px.scheduler.run(_user_input)
-
-
 
 
 
