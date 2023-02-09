@@ -258,7 +258,7 @@ class UltrasonicSensor:
         return self.interpreter_bus.write(message)
 
     def _run(self, time_delay: float) -> None:
-        while self.run:
+        while self.px.run:
             self.interpreter_bus.write(self.read())
             time.sleep(time_delay)
 
@@ -270,7 +270,8 @@ class GrayscaleSensor:
         self.chn_2 = ADC(pin2)
         self.reference = reference
         self.grayscale_bus = px.grayscale_bus = GrayscaleBus()
-        self.run = px.run
+        self.px = px
+        self.name = "grayscale_sensor"
 
     def get_grayscale_data(self) -> List[int]:
         adc_value_list = []
@@ -280,11 +281,11 @@ class GrayscaleSensor:
         return adc_value_list
 
     def write_interpreter_bus(self, message: Any) -> None:
-        return self.grayscale_bus.write(message)
+        return self.grayscale_bus.write(message, tag=self.name)
 
     def _run(self, time_delay: float) -> None:
 
-        while self.run:
+        while self.px.run:
             self.write_interpreter_bus(self.get_grayscale_data())
             time.sleep(time_delay)
 

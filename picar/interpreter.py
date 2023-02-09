@@ -5,6 +5,13 @@ interpret.py
 Luke Strohbehn
 """
 
+import logging
+from logdecorator import log_on_start, log_on_end, log_on_error
+
+logging_format = "%(asctime)s: %(message)s"
+logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%H:%M:%S")
+logging.getLogger().setLevel(logging.DEBUG)
+
 # import picarx_improved as pcx
 from numpy import mean
 
@@ -41,10 +48,9 @@ class GrayscaleInterpreter:
         # Bus
         self.grayscale_bus = px.grayscale_bus
         self.gs_interpreter_bus = px.gs_interpreter_bus = InterpreterBus() ### what if this fails? we need to make sure instantiation happens higher?
+        self.px = px
 
         self.bus_contents = {}
-
-        self.run = px.run
 
     def set_initial_gs_vals(self, greyscale_data: List[int]) -> None:
         self.left_deq.append(greyscale_data[0])
@@ -101,17 +107,22 @@ class GrayscaleInterpreter:
             steer_angle = self.map_steer_idx_to_angle(steer_scale)
             return steer_angle
 
+    @log_on_error(logging.DEBUG, "Error reading the sensor bus.")
     def read_sensor_bus(self) -> dict:
-        self.bus_contents["grayscale"] = self.grayscale_bus.read()
-        self.bus_contents["camera"] = self.camera_bus.read()
+        # self.bus_contents["grayscale"] = self.grayscale_bus.read()
+        # self.bus_contents["camera"] = self.camera_bus.read()
         return self.grayscale_bus.read()
 
+    @log_on_error(logging.DEBUG, "Error writing the interpreter bus.")
     def write_interpreter_bus(self, message: Any) -> dict: ######## will need to change return type here
         return self.interpreter_bus.write(message)
 
+    @log_on_error(logging.DEBUG, "Error on _run")
     def _run(self, time_delay: float) -> None:
-        while self.run:
-            self.write_interpreter_bus(self.read_sensor_bus())
+        while self.px.run:
+            data = self.read_sensor_bus()
+            # print(data)
+            self.write_interpreter_bus(data)
             time.sleep(time_delay)
 
 

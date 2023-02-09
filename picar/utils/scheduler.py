@@ -14,7 +14,6 @@ logging.getLogger().setLevel(logging.DEBUG)
 class Scheduler:
     def __init__(self, px) -> None:
         self.px = px
-        self.run = px.run
         self.maneuver = px.maneuver
         self.grayscale_sensor = px.grayscale_sensor
         self.gs_interpreter = px.gs_interpreter
@@ -22,7 +21,7 @@ class Scheduler:
 
     def _run(self, user_input):
         # delays
-        self.run = True
+        self.px.run = True
 
         
 
@@ -31,21 +30,29 @@ class Scheduler:
 
         try:
 
-            # executor
-            executor = cf.ThreadPoolExecutor(max_workers=3)
-            grayscale = executor.submit(self.grayscale_sensor._run, grayscale_delay)
-            grayscale.result()
-            logging.debug(f"grayscale: {grayscale}")
+            # executor = cf.ThreadPoolExecutor(max_workers=3)
+            # grayscale = executor.submit(self.grayscale_sensor._run, grayscale_delay)
+            # grayscale.result()
+            # logging.debug(f"grayscale: {grayscale}")
             
-            interpreter = executor.submit(self.gs_interpreter._run, interpreter_delay)
-            interpreter.result()
+            # interpreter = executor.submit(self.gs_interpreter._run, interpreter_delay)
+            # interpreter.result()
             
-            logging.debug(f"interpreter: {interpreter}")
-
+            # logging.debug(f"interpreter: {interpreter}")
             # print(grayscale)
             # print(interpreter)
+
+            # print(self.px.run)
+
+            with cf.ThreadPoolExecutor(max_workers=3) as executor:
+                grayscale = executor.submit(self.grayscale_sensor._run, grayscale_delay)
+                logging.debug(f"grayscale: {grayscale}")
+                interpreter = executor.submit(self.gs_interpreter._run, interpreter_delay)
+                logging.debug(f"interpreter: {interpreter}")
+            interpreter.result()
+            
         except Exception as e:
-            self.run = False
+            self.px.run = False
             print(e)
 
         return
