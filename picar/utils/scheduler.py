@@ -15,36 +15,28 @@ class Scheduler:
         self.px = px
         return
 
-    def run(self, user_input):
+    def run(self, user_input) -> bool:
         # delays
+        self.px.run = True
+
         grayscale_delay = 0.5
         interpreter_delay = 0.5
 
-        # executor
-        with cf.ThreadPoolExecutor(max_workers=3) as executor:
-            eSensor = executor.submit(self.px.grayscale_sensor.run, grayscale_delay)
-            logging.debug(f"eSensor: {eSensor}")
+        try:
+
+            # executor
+            executor = cf.ThreadPoolExecutor(max_workers=3)
+            grayscale = executor.submit(self.px.grayscale_sensor.run, grayscale_delay)
+            logging.debug(f"grayscale: {grayscale}")
             
             interpreter = executor.submit(self.px.interpreter.run, interpreter_delay)
             logging.debug(f"interpreter: {interpreter}")
 
-            for future in cf.as_completed(eSensor):
-                data1 = eSensor[future]
-                logging.debug(f"Data 1: {data1}")
-                try:
-                    data2 = future.result()
-                    logging.debug(f"Data 2: {data2}")
-                except Exception as e:
-                    print(e)
 
-
-            # eInterpreter = executor.submit(interpreter_function, sensor_values_bus, interpreter_delay)
-
-        eSensor.result()  # displays erros
-        # eInterpreter.result()
-
-        print(eSensor)
-        # print(eInterpreter)
+            # print(grayscale)
+            # print(interpreter)
+        except Exception as e:
+            print(e)
 
         return
 

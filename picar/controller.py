@@ -5,33 +5,37 @@ from picar.utils.bus import InterpreterBus, UltrasonicBus
 from picar.picarx import Picar
 
 import time
+from typing import Any
 
 
 class Controller:
     def __init__(self, px: Picar) -> None:
-        control_data = {}
+        self.control_data = {}
         self.interpreter_bus = px.interpreter_bus
         self.ultrasonic_bus = px.ultrasonic_bus
+        self.run = px.run
         return
 
     def read_interpreter_bus(self):
         return self.interpreter_bus.read()
 
-    def read_ultrasonic_bus(self):
+    def read_ultrasonic_bus(self) -> Any:
         return self.ultrasonic_bus.read()
 
     # need some publisher functions here
 
-    def run(self, time_delay):
+    def run(self, time_delay: float) -> None:
 
-        while True:
+        while self.run:
             # get interpreter data
             self.control_data["interpreter_data"] = self.read_interpreter_bus(self)
 
             # get ultrasonic data, maybe make loop more frequent?
             self.control_data["ultrasonic_data"] = self.read_ultrasonic_bus(self)
 
-            # do something
+            # do something, if completed, self.run = False
+
+            
 
             time.sleep(time_delay)
 

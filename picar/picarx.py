@@ -77,7 +77,7 @@ class Picarx(object):
         config: str = config_file,
     ):
         # user input dictionary
-        self.COMMAND_DICT: dict = {"1": "parallel_park", "2": "k_turn", "3": "follow line"}
+        self.COMMAND_DICT: dict = {"1": "parallel_park", "2": "k_turn", "3": "follow line", "q": "quit Picar"}
         self.ACTIVE_COMMAND: str
         # Car dimensions
         self.LENGTH_CHASSIS: float = 9.36625  # cm 3 + 11/16 in
@@ -134,6 +134,7 @@ class Picarx(object):
 
         # Scheduler
         self.scheduler = Scheduler(self)
+        self.run = False
         
         # Maneuver
         self.maneuver = Maneuver(self)
@@ -268,8 +269,11 @@ class Picarx(object):
         self.set_motor_speed(1, 0)
         self.set_motor_speed(2, 0)
 
+    @log_on_end(logging.DEBUG, "System cleanup successful.")
     def cleanup(self):
         self.stop()
+        self.run = False
+        return
 
     def get_distance(self):
         return self.ultrasonic.read()

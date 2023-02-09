@@ -14,11 +14,16 @@ from picar.user import user_input
 def main():
     px = pcx.Picarx()
 
-    _user_input = user_input(px)
+    
+    _continue = True
+    while _continue:
+        _user_input = user_input(px)
 
 
 
-    px.scheduler.run(_user_input)
+        px.scheduler.run(_user_input)
+
+
 
 
 

@@ -9,7 +9,7 @@ Luke Strohbehn
 from numpy import mean
 
 # import scipy as sp
-from typing import List
+from typing import List, Any
 from collections import deque
 import logging
 import time
@@ -36,15 +36,21 @@ class GrayscaleInterpreter:
         self.left_deq = deque([], maxlen=self.deque_len)
         self.mid_deq = deque([], maxlen=self.deque_len)
         self.right_deq = deque([], maxlen=self.deque_len)
+        
 
         # Bus
         self.grayscale_bus = px.grayscale_bus
-        self.interpreter_bus = px.interpreter_bus = InterpreterBus()
+        self.gs_interpreter_bus = px.gs_interpreter_bus = InterpreterBus() ### what if this fails? we need to make sure instantiation happens higher?
+
+        self.bus_contents = {}
+
+        self.run = px.run
 
     def set_initial_gs_vals(self, greyscale_data: List[int]) -> None:
         self.left_deq.append(greyscale_data[0])
         self.mid_deq.append(greyscale_data[1])
         self.right_deq.append(greyscale_data[2])
+        return
 
     def get_steering_scale(self, greyscale_data: List[int]) -> float:
         self.left_curr = greyscale_data[0]
@@ -77,11 +83,11 @@ class GrayscaleInterpreter:
 
         total_diff = left_mid_der - right_mid_der
         scaled_diff = total_diff / self.MAX_ADC
-        logging.debug(f"{scaled_diff}")
+        logging.debug(f"scaled diff: {scaled_diff}")
 
         return scaled_diff
 
-    def map_steer_idx_to_angle(self, steer_scale):
+    def map_steer_idx_to_angle(self, steer_scale: float) -> float:
         if steer_scale is None:
             pass
         else:
@@ -95,14 +101,16 @@ class GrayscaleInterpreter:
             steer_angle = self.map_steer_idx_to_angle(steer_scale)
             return steer_angle
 
-    def read_sensor_bus(self):
+    def read_sensor_bus(self) -> dict:
+        self.bus_contents["grayscale"] = self.grayscale_bus.read()
+        self.bus_contents["camera"] = self.camera_bus.read()
         return self.grayscale_bus.read()
 
-    def write_interpreter_bus(self, message):
+    def write_interpreter_bus(self, message: Any) -> dict: ######## will need to change return type here
         return self.interpreter_bus.write(message)
 
-    def run(self, time_delay):
-        while True:
+    def run(self, time_delay: float) -> None:
+        while self.run:
             self.write_interpreter_bus(self.read_sensor_bus())
             time.sleep(time_delay)
 
