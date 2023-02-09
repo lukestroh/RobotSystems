@@ -8,7 +8,7 @@ from picar.utils.basic import _Basic_class
 # from motor import Motor
 import time
 from picar.utils.bus import GrayscaleBus, UltrasonicBus
-from typing import Any, List
+from typing import Any, List, Union
 
 from smbus import SMBus
 
@@ -226,7 +226,7 @@ class UltrasonicSensor:
         self.run = px.run
         return
 
-    def _read(self) -> Any[int, float]:
+    def _read(self) -> Union[int, float]:
         self.trig.low()
         time.sleep(0.01)
         self.trig.high()
@@ -247,7 +247,7 @@ class UltrasonicSensor:
         cm = round(during * 340 / 2 * 100, 2)
         return cm
 
-    def read(self, times=10) -> Any[int, float]:
+    def read(self, times=10) -> Union[int, float]:
         for i in range(times):
             a = self._read()
             if a != -1:
@@ -257,7 +257,7 @@ class UltrasonicSensor:
     def write_interpreter_bus(self, message: Any) -> None:
         return self.interpreter_bus.write(message)
 
-    def run(self, time_delay: float) -> None:
+    def _run(self, time_delay: float) -> None:
         while self.run:
             self.interpreter_bus.write(self.read())
             time.sleep(time_delay)
@@ -282,7 +282,7 @@ class GrayscaleSensor:
     def write_interpreter_bus(self, message: Any) -> None:
         return self.grayscale_bus.write(message)
 
-    def run(self, time_delay: float) -> None:
+    def _run(self, time_delay: float) -> None:
 
         while self.run:
             self.write_interpreter_bus(self.get_grayscale_data())

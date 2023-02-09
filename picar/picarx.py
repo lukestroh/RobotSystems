@@ -85,6 +85,10 @@ class Picarx(object):
         self.LENGTH_FRONT_WHEELBASE: float = 10.75
         self.FRONT_WHEEL_DI: float = 6.6
         self.BACK_WHEEL_DI: float = 6.58
+
+        # program running bool
+        self.run = False
+
         # config_flie
         self.config_flie = fileDB(config, 774, User)
         # servos init
@@ -132,12 +136,11 @@ class Picarx(object):
         # Interpreter
         self.gs_interpreter = GrayscaleInterpreter(self, light_idx=1000, dark_idx=500, polarity="light")
 
-        # Scheduler
-        self.scheduler = Scheduler(self)
-        self.run = False
-        
         # Maneuver
         self.maneuver = Maneuver(self)
+        
+        # Scheduler
+        self.scheduler = Scheduler(self)
 
         # at exit
         atexit.register(self.cleanup)

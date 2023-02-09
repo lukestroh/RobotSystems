@@ -6,6 +6,7 @@ Luke Strohbehn
 import concurrent.futures as cf
 import logging
 
+
 logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%H:%M:%S")
 logging.getLogger().setLevel(logging.DEBUG)
@@ -14,11 +15,16 @@ class Scheduler:
     def __init__(self, px) -> None:
         self.px = px
         self.run = px.run
+        self.maneuver = px.maneuver
+        self.grayscale_sensor = px.grayscale_sensor
+        self.gs_interpreter = px.gs_interpreter
         return
 
-    def run(self, user_input) -> bool:
+    def _run(self, user_input):
         # delays
-        self.px.run = True
+        self.run = True
+
+        
 
         grayscale_delay = 0.5
         interpreter_delay = 0.5
@@ -27,12 +33,14 @@ class Scheduler:
 
             # executor
             executor = cf.ThreadPoolExecutor(max_workers=3)
-            grayscale = executor.submit(self.px.grayscale_sensor.run, grayscale_delay)
+            grayscale = executor.submit(self.grayscale_sensor._run, grayscale_delay)
+            grayscale.result()
             logging.debug(f"grayscale: {grayscale}")
             
-            interpreter = executor.submit(self.px.interpreter.run, interpreter_delay)
+            interpreter = executor.submit(self.gs_interpreter._run, interpreter_delay)
+            interpreter.result()
+            
             logging.debug(f"interpreter: {interpreter}")
-
 
             # print(grayscale)
             # print(interpreter)
@@ -43,6 +51,7 @@ class Scheduler:
         return
 
     def run_until_complete(self, user_input):
-        while True:
-            self.run(user_input)
+        self.run = True
+        while self.run:
+            self._run(user_input)
         return

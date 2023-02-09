@@ -109,7 +109,7 @@ class GrayscaleInterpreter:
     def write_interpreter_bus(self, message: Any) -> dict: ######## will need to change return type here
         return self.interpreter_bus.write(message)
 
-    def run(self, time_delay: float) -> None:
+    def _run(self, time_delay: float) -> None:
         while self.run:
             self.write_interpreter_bus(self.read_sensor_bus())
             time.sleep(time_delay)

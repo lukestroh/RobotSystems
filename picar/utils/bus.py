@@ -12,6 +12,7 @@ import time
 class ControllerBus(BasicBus):
     def __init__(self) -> None:
         super().__init__()
+        
 
         pass
 
@@ -19,6 +20,7 @@ class ControllerBus(BasicBus):
 class GrayscaleBus(BasicBus):
     def __init__(self) -> None:
         super().__init__()
+        self.message = [0,0,0]
         return
 
     def run(self, time_limit):
@@ -44,6 +46,7 @@ class UltrasonicBus(BasicBus):
 class InterpreterBus(BasicBus):
     def __init__(self) -> None:
         super().__init__()
+        self.message = {}
 
         # make a dictionary for each of the types of data, (and give them priority numbers?)
 
