@@ -109,9 +109,9 @@ class GrayscaleInterpreter:
 
     @log_on_error(logging.DEBUG, "Error reading the sensor bus.")
     def read_sensor_bus(self) -> dict:
-        # self.bus_contents["grayscale"] = self.grayscale_bus.read()
+        self.bus_contents["grayscale"] = self.grayscale_bus.read()
         # self.bus_contents["camera"] = self.camera_bus.read()
-        return self.grayscale_bus.read()
+        return self.bus_contents
 
     @log_on_error(logging.DEBUG, "Error writing the interpreter bus.")
     def write_interpreter_bus(self, message: Any) -> dict: ######## will need to change return type here
