@@ -13,6 +13,7 @@ logging.getLogger().setLevel(logging.DEBUG)
 class Scheduler:
     def __init__(self, px) -> None:
         self.px = px
+        self.run = px.run
         return
 
     def run(self, user_input) -> bool:
@@ -36,6 +37,7 @@ class Scheduler:
             # print(grayscale)
             # print(interpreter)
         except Exception as e:
+            self.run = False
             print(e)
 
         return
