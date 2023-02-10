@@ -49,6 +49,7 @@ class GrayscaleInterpreter:
         self.grayscale_bus = px.grayscale_bus
         self.gs_interpreter_bus = px.gs_interpreter_bus = InterpreterBus() ### what if this fails? we need to make sure instantiation happens higher?
         self.px = px
+        self.name = "interpreter"
 
         self.bus_contents = {}
 
@@ -114,8 +115,9 @@ class GrayscaleInterpreter:
         return self.bus_contents
 
     @log_on_error(logging.DEBUG, "Error writing the interpreter bus.")
+
     def write_interpreter_bus(self, message: dict) -> None: ######## will need to change return type here
-        return self.interpreter_bus.write(message)
+        return self.interpreter_bus.write(message, tag=self.name)
 
     @log_on_error(logging.DEBUG, "Error on _run")
     def _run(self, time_delay: float) -> None:
