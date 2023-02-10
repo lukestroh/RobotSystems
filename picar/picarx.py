@@ -26,7 +26,7 @@ import numpy as np
 from picar.motor import Pin, PWM, Servo
 
 from picar.sensor import I2C, GrayscaleSensor, UltrasonicSensor
-from picar.interpreter import GrayscaleInterpreter
+from picar.interpreter import Interpreter
 from picar.maneuver import Maneuver
 
 from picar.utils.scheduler import Scheduler
@@ -134,7 +134,7 @@ class Picarx(object):
         self.ultrasonic = UltrasonicSensor(self, Pin(tring), Pin(echo))
         
         # Interpreter
-        self.gs_interpreter = GrayscaleInterpreter(self, light_idx=1000, dark_idx=500, polarity="light")
+        self.interpreter = Interpreter(self, light_idx=1000, dark_idx=500, polarity="light")
 
         # Maneuver
         self.maneuver = Maneuver(self)

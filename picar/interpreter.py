@@ -29,7 +29,7 @@ logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%H:%M:%S
 logging.getLogger().setLevel(logging.DEBUG)
 
 
-class GrayscaleInterpreter:
+class Interpreter:
     def __init__(self, px, light_idx: int, dark_idx: int, polarity: str = "dark") -> None:
         self.light_idx = light_idx
         self.dark_idx = dark_idx
@@ -47,7 +47,7 @@ class GrayscaleInterpreter:
 
         # Bus
         self.grayscale_bus = px.grayscale_bus
-        self.gs_interpreter_bus = px.gs_interpreter_bus = InterpreterBus() ### what if this fails? we need to make sure instantiation happens higher?
+        self.interpreter_bus = px.interpreter_bus = InterpreterBus() ### what if this fails? we need to make sure instantiation happens higher?
         self.px = px
         self.name = "interpreter"
 
@@ -90,7 +90,7 @@ class GrayscaleInterpreter:
 
         total_diff = left_mid_der - right_mid_der
         scaled_diff = total_diff / self.MAX_ADC
-        logging.debug(f"scaled diff: {scaled_diff}")
+        # logging.debug(f"scaled diff: {scaled_diff}")
 
         return scaled_diff
 
@@ -116,14 +116,16 @@ class GrayscaleInterpreter:
 
     @log_on_error(logging.DEBUG, "Error writing the interpreter bus.")
 
-    def write_interpreter_bus(self, message: dict) -> None: ######## will need to change return type here
+    def write_interpreter_bus(self, message: float) -> None: ######## will need to change return type here
         return self.interpreter_bus.write(message, tag=self.name)
 
     @log_on_error(logging.DEBUG, "Error on _run")
     def _run(self, time_delay: float) -> None:
         while self.px.run:
-            data = self.read_sensor_bus()
-            self.write_interpreter_bus(data)
+            self.bus_contents["steering_angle"] = self.follow_line(self.read_sensor_bus()["grayscale"])
+            print(self.bus_contents)
+
+            self.write_interpreter_bus(self.bus_contents)
             time.sleep(time_delay)
 
 

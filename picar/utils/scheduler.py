@@ -16,7 +16,7 @@ class Scheduler:
         self.px = px
         self.maneuver = px.maneuver
         self.grayscale_sensor = px.grayscale_sensor
-        self.gs_interpreter = px.gs_interpreter
+        self.interpreter = px.interpreter
         return
 
     def _run(self, user_input):
@@ -47,7 +47,7 @@ class Scheduler:
             with cf.ThreadPoolExecutor(max_workers=3) as executor:
                 grayscale = executor.submit(self.grayscale_sensor._run, grayscale_delay)
                 logging.debug(f"grayscale: {grayscale}")
-                interpreter = executor.submit(self.gs_interpreter._run, interpreter_delay)
+                interpreter = executor.submit(self.interpreter._run, interpreter_delay)
                 logging.debug(f"interpreter: {interpreter}")
             interpreter.result()
             
