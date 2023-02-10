@@ -114,14 +114,13 @@ class GrayscaleInterpreter:
         return self.bus_contents
 
     @log_on_error(logging.DEBUG, "Error writing the interpreter bus.")
-    def write_interpreter_bus(self, message: Any) -> dict: ######## will need to change return type here
+    def write_interpreter_bus(self, message: dict) -> None: ######## will need to change return type here
         return self.interpreter_bus.write(message)
 
     @log_on_error(logging.DEBUG, "Error on _run")
     def _run(self, time_delay: float) -> None:
         while self.px.run:
             data = self.read_sensor_bus()
-            # print(data)
             self.write_interpreter_bus(data)
             time.sleep(time_delay)
 
