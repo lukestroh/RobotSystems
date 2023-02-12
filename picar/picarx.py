@@ -32,6 +32,8 @@ from picar.maneuver import Maneuver
 from picar.utils.scheduler import Scheduler
 from picar.utils.bus import GrayscaleBus, UltrasonicBus, InterpreterBus
 
+from picar.controller import Controller
+
 from picar.utils.filedb import fileDB
 from picar.utils.utils import reset_mcu
 
@@ -141,6 +143,9 @@ class Picarx(object):
         
         # Scheduler
         self.scheduler = Scheduler(self)
+
+        # Controller
+        self.controller = Controller(self)
 
         # at exit
         atexit.register(self.cleanup)

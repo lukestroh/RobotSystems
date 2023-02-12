@@ -119,11 +119,13 @@ class Interpreter:
     def write_interpreter_bus(self, message: float) -> None: ######## will need to change return type here
         return self.interpreter_bus.write(message, tag=self.name)
 
-    @log_on_error(logging.DEBUG, "Error on _run")
+    @log_on_error(logging.DEBUG, "Error on interpreter._run")
     def _run(self, time_delay: float) -> None:
         while self.px.run:
+
+            ###### The follow-line stuff is here, but the other maneuvers are in maneuver. Maybe centralize the movement?
             self.bus_contents["steering_angle"] = self.follow_line(self.read_sensor_bus()["grayscale"])
-            print(self.bus_contents)
+            # print(self.bus_contents)
 
             self.write_interpreter_bus(self.bus_contents)
             time.sleep(time_delay)

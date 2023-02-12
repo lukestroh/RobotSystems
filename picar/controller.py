@@ -13,7 +13,6 @@ class Controller:
         self.control_data = {}
         self.interpreter_bus = px.interpreter_bus
         self.ultrasonic_bus = px.ultrasonic_bus
-        self.run = px.run
         return
 
     def read_interpreter_bus(self):
@@ -26,7 +25,7 @@ class Controller:
 
     def run(self, time_delay: float) -> None:
 
-        while self.run:
+        while self.px.run:
             # get interpreter data
             self.control_data["interpreter_data"] = self.read_interpreter_bus(self)
 
