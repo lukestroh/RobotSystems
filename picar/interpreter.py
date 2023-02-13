@@ -24,11 +24,6 @@ import time
 from picar.utils.bus import InterpreterBus
 
 
-logging_format = "%(asctime)s: %(message)s"
-logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%H:%M:%S")
-logging.getLogger().setLevel(logging.DEBUG)
-
-
 class Interpreter:
     def __init__(self, px, light_idx: int, dark_idx: int, polarity: str = "dark") -> None:
         self.light_idx = light_idx
@@ -63,8 +58,6 @@ class Interpreter:
         self.left_curr = greyscale_data[0]
         self.mid_curr = greyscale_data[1]
         self.right_curr = greyscale_data[2]
-
-        """ Get the average of the right and left to determine how much to turn? """
 
         left_avg = mean(self.left_deq)
         mid_avg = mean(self.mid_deq)
@@ -116,7 +109,7 @@ class Interpreter:
 
     @log_on_error(logging.DEBUG, "Error writing the interpreter bus.")
 
-    def write_interpreter_bus(self, message: float) -> None: ######## will need to change return type here
+    def write_interpreter_bus(self, message: float) -> None:
         return self.interpreter_bus.write(message, tag=self.name)
 
     @log_on_error(logging.DEBUG, "Error on interpreter._run")

@@ -56,7 +56,7 @@ class Scheduler:
                 # logging.debug(f"interpreter: {interpreter}")
 
                 # controller
-                controller = executor.submit(self.controller, controller_delay)
+                controller = executor.submit(self.controller._run, controller_delay, user_input)
             # interpreter.result()
             
         except Exception as e:
