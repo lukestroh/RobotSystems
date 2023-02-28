@@ -45,8 +45,6 @@ class Controller:
 
             # do something, if completed, self.px.run = False
             self.get_maneuver(user_input)
-            
+
             time.sleep(time_delay)
 
-    def read_controller_bus():
-        return
