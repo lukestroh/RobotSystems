@@ -1,0 +1,6 @@
+logdecorator==2.4
+numpy==1.24.1
+pyserial==3.5
+readerwriterlock==1.0.9
+robot-hat==1.0.2
+typing_extensions==4.4.0

@@ -26,11 +26,13 @@ import numpy as np
 from picar.motor import Pin, PWM, Servo
 
 from picar.sensor import I2C, GrayscaleSensor, UltrasonicSensor
-from picar.interpreter import GrayscaleInterpreter
+from picar.interpreter import Interpreter
 from picar.maneuver import Maneuver
 
 from picar.utils.scheduler import Scheduler
 from picar.utils.bus import GrayscaleBus, UltrasonicBus, InterpreterBus
+
+from picar.controller import Controller
 
 from picar.utils.filedb import fileDB
 from picar.utils.utils import reset_mcu
@@ -77,7 +79,7 @@ class Picarx(object):
         config: str = config_file,
     ):
         # user input dictionary
-        self.COMMAND_DICT: dict = {"1": "parallel_park", "2": "k_turn", "3": "follow line"}
+        self.COMMAND_DICT: dict = {"1": "parallel_park", "2": "k_turn", "3": "follow line", "q": "quit Picar"}
         self.ACTIVE_COMMAND: str
         # Car dimensions
         self.LENGTH_CHASSIS: float = 9.36625  # cm 3 + 11/16 in
@@ -85,6 +87,10 @@ class Picarx(object):
         self.LENGTH_FRONT_WHEELBASE: float = 10.75
         self.FRONT_WHEEL_DI: float = 6.6
         self.BACK_WHEEL_DI: float = 6.58
+
+        # program running bool
+        self.run = False
+
         # config_flie
         self.config_flie = fileDB(config, 774, User)
         # servos init
@@ -127,16 +133,19 @@ class Picarx(object):
         # ultrasonic init
         # usage: distance = self.ultrasonic.read()
         tring, echo = ultrasonic_pins
-        self.ultrasonic = UltrasonicSensor(Pin(tring), Pin(echo))
+        self.ultrasonic = UltrasonicSensor(self, Pin(tring), Pin(echo))
         
         # Interpreter
-        self.gs_interpreter = GrayscaleInterpreter(self, light_idx=1000, dark_idx=500, polarity="light")
+        self.interpreter = Interpreter(self, light_idx=1000, dark_idx=500, polarity="light")
 
-        # Scheduler
-        self.scheduler = Scheduler(self)
-        
         # Maneuver
         self.maneuver = Maneuver(self)
+        
+        # Scheduler
+        self.scheduler = Scheduler(self)
+
+        # Controller
+        self.controller = Controller(self)
 
         # at exit
         atexit.register(self.cleanup)
@@ -268,8 +277,11 @@ class Picarx(object):
         self.set_motor_speed(1, 0)
         self.set_motor_speed(2, 0)
 
+    @log_on_end(logging.DEBUG, "System cleanup successful.")
     def cleanup(self):
         self.stop()
+        self.run = False
+        return
 
     def get_distance(self):
         return self.ultrasonic.read()
