@@ -42,14 +42,15 @@ class ColorTracking():
         self.center_list: list = []
         self.first_move: bool = True
         self.__isRunning: bool = False
-        self.detect_colo: str = 'None'
+        self.detect_color: str = 'None'
         self.action_finish: bool = True
         self.start_pick_up: bool = False
         self.start_count_t1: bool = True
 
         self.t1: int = 0
         self.roi: tuple = ()
-        self.last_x, self.last_y: int = 0, 0
+        self.last_x: int = 0
+        self.last_y: int = 0
 
     
         self.count: int = 0
@@ -68,8 +69,10 @@ class ColorTracking():
         self.size: Tuple[int, int] = (640, 480)
         self.rotation_angle: int = 0
         self.unreachable: bool = False
-        self.world_X, self.world_Y: int = 0, 0
-        self.world_x, self.world_y: int = 0, 0
+        self.world_X: int = 0
+        self.world_Y: int = 0
+        self.world_x: int = 0
+        self.world_y: int = 0
 
         return
 
@@ -464,8 +467,8 @@ class ColorTracking():
 if __name__ == '__main__':
 
     if sys.version_info.major == 2:
-    print('Please run this program with python3!')
-    sys.exit(0)
+        print('Please run this program with python3!')
+        sys.exit(0)
 
     ct = ColorTracking()
     ct.init()
