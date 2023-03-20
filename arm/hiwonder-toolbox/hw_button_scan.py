@@ -4,14 +4,16 @@ import RPi.GPIO as GPIO
 key1_pin = 13
 key2_pin = 23
 
+
 def reset_wifi():
     os.system("rm /etc/Hiwonder/* -rf > /dev/null 2>&1")
     os.system("systemctl restart hw_wifi.service > /dev/null 2>&1")
 
+
 if __name__ == "__main__":
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(key1_pin, GPIO.IN, pull_up_down = GPIO.PUD_UP)
-    GPIO.setup(key2_pin, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+    GPIO.setup(key1_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(key2_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
     key1_pressed = False
     key2_pressed = False
@@ -44,7 +46,7 @@ if __name__ == "__main__":
                     if count == 60:
                         count = 0
                         key2_pressed = False
-                        os.system('sudo halt')
+                        os.system("sudo halt")
             else:
                 count = 0
                 key2_pressed = False
@@ -54,4 +56,3 @@ if __name__ == "__main__":
             key1_pressed = False
             key2_pressed = False
             time.sleep(0.05)
-        

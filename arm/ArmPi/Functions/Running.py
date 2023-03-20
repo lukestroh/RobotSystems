@@ -15,22 +15,25 @@ LastHeartbeat = 0
 cam = None
 
 FUNCTIONS = {
-    1: RemoteControl,    # 运动控制
-    2: ColorTracking,    # 颜色追踪
-    3: ColorSorting,     # 颜色分拣
-    4: ColorPalletizing, # 智能码垛
-    5: ASRControl,       # 语音控制
-    6: Calibrating,      # 位置校准 
+    1: RemoteControl,  # 运动控制
+    2: ColorTracking,  # 颜色追踪
+    3: ColorSorting,  # 颜色分拣
+    4: ColorPalletizing,  # 智能码垛
+    5: ASRControl,  # 语音控制
+    6: Calibrating,  # 位置校准
 }
+
 
 def doHeartbeat(tmp=()):
     global LastHeartbeat
     LastHeartbeat = time.time() + 7
     return (True, ())
 
+
 def CurrentEXE():
     global RunningFunc
     return FUNCTIONS[RunningFunc]
+
 
 def loadFunc(newf):
     global RunningFunc
@@ -39,7 +42,7 @@ def loadFunc(newf):
     doHeartbeat()
 
     if new_func < 1 or new_func > 6:
-        return (False,  sys._getframe().f_code.co_name + ": Invalid argument")
+        return (False, sys._getframe().f_code.co_name + ": Invalid argument")
     else:
         try:
             if RunningFunc > 1:
@@ -52,7 +55,8 @@ def loadFunc(newf):
             print(e)
     return (True, (RunningFunc,))
 
-def unloadFunc(tmp = ()):
+
+def unloadFunc(tmp=()):
     global RunningFunc
     if RunningFunc != 0:
         FUNCTIONS[RunningFunc].exit()
@@ -60,19 +64,23 @@ def unloadFunc(tmp = ()):
     cam.camera_close()
     return (True, (0,))
 
+
 def getLoadedFunc(newf):
     global RunningFunc
     return (True, (RunningFunc,))
+
 
 def startFunc(tmp):
     global RunningFunc
     FUNCTIONS[RunningFunc].start()
     return (True, (RunningFunc,))
 
+
 def stopFunc(tmp):
     global RunningFunc
     FUNCTIONS[RunningFunc].stop()
     return (True, (RunningFunc,))
+
 
 def heartbeatTask():
     global LastHeartbeat
@@ -85,5 +93,6 @@ def heartbeatTask():
             time.sleep(0.1)
         except KeyboardInterrupt:
             break
+
 
 threading.Thread(target=heartbeatTask, daemon=True).start()

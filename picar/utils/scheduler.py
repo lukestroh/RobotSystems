@@ -11,6 +11,7 @@ logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%H:%M:%S")
 logging.getLogger().setLevel(logging.DEBUG)
 
+
 class Scheduler:
     def __init__(self, px) -> None:
         self.px = px
@@ -24,22 +25,19 @@ class Scheduler:
         # delays
         self.px.run = True
 
-        
-
         grayscale_delay = 0.5
         interpreter_delay = 0.5
         controller_delay = 0.5
 
         try:
-
             # executor = cf.ThreadPoolExecutor(max_workers=3)
             # grayscale = executor.submit(self.grayscale_sensor._run, grayscale_delay)
             # grayscale.result()
             # logging.debug(f"grayscale: {grayscale}")
-            
+
             # interpreter = executor.submit(self.gs_interpreter._run, interpreter_delay)
             # interpreter.result()
-            
+
             # logging.debug(f"interpreter: {interpreter}")
             # print(grayscale)
             # print(interpreter)
@@ -58,7 +56,7 @@ class Scheduler:
                 # controller
                 controller = executor.submit(self.controller._run, controller_delay, user_input)
             # interpreter.result()
-            
+
         except Exception as e:
             self.px.run = False
             print(e)

@@ -38,11 +38,12 @@ class Interpreter:
         self.left_deq = deque([], maxlen=self.deque_len)
         self.mid_deq = deque([], maxlen=self.deque_len)
         self.right_deq = deque([], maxlen=self.deque_len)
-        
 
         # Bus
         self.grayscale_bus = px.grayscale_bus
-        self.interpreter_bus = px.interpreter_bus = InterpreterBus() ### what if this fails? we need to make sure instantiation happens higher?
+        self.interpreter_bus = (
+            px.interpreter_bus
+        ) = InterpreterBus()  ### what if this fails? we need to make sure instantiation happens higher?
         self.px = px
         self.name = "interpreter"
 
@@ -108,14 +109,12 @@ class Interpreter:
         return self.bus_contents
 
     @log_on_error(logging.DEBUG, "Error writing the interpreter bus.")
-
     def write_interpreter_bus(self, message: float) -> None:
         return self.interpreter_bus.write(message, tag=self.name)
 
     @log_on_error(logging.DEBUG, "Error on interpreter._run")
     def _run(self, time_delay: float) -> None:
         while self.px.run:
-
             ###### The follow-line stuff is here, but the other maneuvers are in maneuver. Maybe centralize the movement?
             self.bus_contents["steering_angle"] = self.follow_line(self.read_sensor_bus()["grayscale"])
             # print(self.bus_contents)

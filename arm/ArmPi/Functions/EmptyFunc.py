@@ -10,7 +10,7 @@ import threading
 import queue
 
 if sys.version_info.major == 2:
-    print('Please run this program with python3!')
+    print("Please run this program with python3!")
     sys.exit(0)
 
 

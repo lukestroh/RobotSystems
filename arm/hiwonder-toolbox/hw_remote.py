@@ -2,6 +2,7 @@ import os, sys
 import socketserver
 import json
 
+
 class TCPHandler(socketserver.BaseRequestHandler):
     def handle(self):
         self.request.settimeout(2)
@@ -16,18 +17,18 @@ class TCPHandler(socketserver.BaseRequestHandler):
                 if not data:
                     pass
                 else:
-                    msg = str(data, encoding='utf-8')
+                    msg = str(data, encoding="utf-8")
                     try:
                         key_dict = json.loads(msg)
                     except:
                         continue
                     print(key_dict)
-                    if 'setwifi' in key_dict:
-                        key_dict = key_dict['setwifi']
-                        if 'ssid' in key_dict and 'passwd' in key_dict:
+                    if "setwifi" in key_dict:
+                        key_dict = key_dict["setwifi"]
+                        if "ssid" in key_dict and "passwd" in key_dict:
                             buf = "HW_WIFI_MODE = 2\n"
-                            buf += "HW_WIFI_STA_SSID = \"" + key_dict['ssid'] + '\"\n'
-                            buf += "HW_WIFI_STA_PASSWORD = \"" + key_dict['passwd'] + '\"\n'
+                            buf += 'HW_WIFI_STA_SSID = "' + key_dict["ssid"] + '"\n'
+                            buf += 'HW_WIFI_STA_PASSWORD = "' + key_dict["passwd"] + '"\n'
                             with open("/etc/Hiwonder/hiwonder_wifi_conf.py", "w") as fp:
                                 fp.write(buf)
                             print(buf)
@@ -36,6 +37,7 @@ class TCPHandler(socketserver.BaseRequestHandler):
             except:
                 break
         self.request.close()
+
 
 class PhoneServer(socketserver.TCPServer):
     timeout = 2
@@ -46,10 +48,11 @@ class PhoneServer(socketserver.TCPServer):
         socketserver.TCPServer.__init__(self, server_address, RequestHandlerClass)
 
     def handle_timeout(self):
-        print('Timeout')
+        print("Timeout")
+
 
 if __name__ == "__main__":
     if not os.path.exists("/etc/Hiwonder"):
         os.system("mkdir /etc/Hiwonder")
-    server = PhoneServer(('0.0.0.0', 9026), TCPHandler)
+    server = PhoneServer(("0.0.0.0", 9026), TCPHandler)
     server.serve_forever()

@@ -21,8 +21,8 @@ class Controller:
 
     def read_ultrasonic_bus(self) -> Any:
         return self.ultrasonic_bus.read()
-    
-    def get_maneuver(self, user_input:str) -> None:
+
+    def get_maneuver(self, user_input: str) -> None:
         user_command = self.px.COMMAND_DICT[user_input]
         if user_command == "parallel_park":
             self.px.maneuver.parallel_park()
@@ -35,7 +35,6 @@ class Controller:
     # need some publisher functions here
 
     def _run(self, time_delay: float, user_input) -> None:
-
         while self.px.run:
             # get interpreter data
             self.control_data["interpreter_data"] = self.read_interpreter_bus(self)
@@ -47,4 +46,3 @@ class Controller:
             self.get_maneuver(user_input)
 
             time.sleep(time_delay)
-

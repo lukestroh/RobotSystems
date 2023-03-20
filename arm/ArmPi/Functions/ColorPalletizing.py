@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 # coding=utf8
 import sys
-sys.path.append('/home/pi/ArmPi/')
+
+sys.path.append("/home/pi/ArmPi/")
 import cv2
 import time
 import Camera
@@ -13,26 +14,29 @@ import HiwonderSDK.Board as Board
 from CameraCalibration.CalibrationConfig import *
 
 if sys.version_info.major == 2:
-    print('Please run this program with python3!')
+    print("Please run this program with python3!")
     sys.exit(0)
 
 AK = ArmIK()
 
 range_rgb = {
-    'red': (0, 0, 255),
-    'blue': (255, 0, 0),
-    'green': (0, 255, 0),
-    'black': (0, 0, 0),
-    'white': (255, 255, 255),
+    "red": (0, 0, 255),
+    "blue": (255, 0, 0),
+    "green": (0, 255, 0),
+    "black": (0, 0, 0),
+    "white": (255, 255, 255),
 }
 
-__target_color = ('red', 'green', 'blue')
+__target_color = ("red", "green", "blue")
+
+
 def setTargetColor(target_color):
     global __target_color
 
-    #print("COLOR", target_color)
+    # print("COLOR", target_color)
     __target_color = target_color
     return (True, ())
+
 
 # 找出面积最大的轮廓
 # 参数为要比较的轮廓的列表
@@ -50,8 +54,10 @@ def getAreaMaxContour(contours):
 
     return area_max_contour, contour_area_max  # 返回最大的轮廓
 
+
 # 夹持器夹取时闭合的角度
 servo1 = 500
+
 
 # 初始位置
 def initMove():
@@ -59,13 +65,15 @@ def initMove():
     Board.setBusServoPulse(2, 500, 500)
     AK.setPitchRangeMoving((0, 10, 10), -30, -30, -90, 1500)
 
+
 def setBuzzer(timer):
     Board.setBuzzer(0)
     Board.setBuzzer(1)
     time.sleep(timer)
     Board.setBuzzer(0)
 
-#设置扩展板的RGB灯颜色使其跟要追踪的颜色一致
+
+# 设置扩展板的RGB灯颜色使其跟要追踪的颜色一致
 def set_rgb(color):
     if color == "red":
         Board.RGB.setPixelColor(0, Board.PixelColor(255, 0, 0))
@@ -84,26 +92,29 @@ def set_rgb(color):
         Board.RGB.setPixelColor(1, Board.PixelColor(0, 0, 0))
         Board.RGB.show()
 
+
 count = 0
 _stop = False
 color_list = []
 get_roi = False
 __isRunning = False
 move_square = False
-detect_color = 'None'
+detect_color = "None"
 start_pick_up = False
 start_count_t1 = True
 # 放置坐标
 coordinate = {
-    'red':   (-15 + 1, -7 - 0.5, 1.5),
-    'green': (-15 + 1, -7 - 0.5, 1.5),
-    'blue':  (-15 + 1, -7 - 0.5, 1.5),
+    "red": (-15 + 1, -7 - 0.5, 1.5),
+    "green": (-15 + 1, -7 - 0.5, 1.5),
+    "blue": (-15 + 1, -7 - 0.5, 1.5),
 }
-z_r = coordinate['red'][2]
-z_g = coordinate['green'][2]
-z_b = coordinate['blue'][2]
+z_r = coordinate["red"][2]
+z_g = coordinate["green"][2]
+z_b = coordinate["blue"][2]
 z = z_r
-def reset(): 
+
+
+def reset():
     global _stop
     global count
     global get_roi
@@ -113,29 +124,32 @@ def reset():
     global start_pick_up
     global start_count_t1
     global z_r, z_g, z_b, z
-    
+
     count = 0
     _stop = False
     color_list = []
     get_roi = False
     move_square = False
-    detect_color = 'None'
+    detect_color = "None"
     start_pick_up = False
     start_count_t1 = True
-    z_r = coordinate['red'][2]
-    z_g = coordinate['green'][2]
-    z_b = coordinate['blue'][2]
+    z_r = coordinate["red"][2]
+    z_g = coordinate["green"][2]
+    z_b = coordinate["blue"][2]
     z = z_r
+
 
 def init():
     print("ColorPalletizing Init")
     initMove()
+
 
 def start():
     global __isRunning
     reset()
     __isRunning = True
     print("ColorPalletizing Start")
+
 
 def stop():
     global _stop
@@ -144,6 +158,7 @@ def stop():
     __isRunning = False
     print("ColorPalletizing Stop")
 
+
 def exit():
     global _stop
     global __isRunning
@@ -151,11 +166,14 @@ def exit():
     __isRunning = False
     print("ColorPalletizing Exit")
 
+
 rect = None
 size = (640, 480)
 rotation_angle = 0
 unreachable = False
 world_X, world_Y = 0, 0
+
+
 def move():
     global rect
     global _stop
@@ -168,20 +186,20 @@ def move():
     global rotation_angle
     global world_X, world_Y
     global z_r, z_g, z_b, z
-    
+
     dz = 2.5
 
     while True:
         if __isRunning:
-            if detect_color != 'None' and start_pick_up:  # 如果检测到方块没有移动一段时间后，开始夹取
+            if detect_color != "None" and start_pick_up:  # 如果检测到方块没有移动一段时间后，开始夹取
                 set_rgb(detect_color)
                 setBuzzer(0.1)
                 # 高度累加
                 z = z_r
                 z_r += dz
-                if z == 2 * dz + coordinate['red'][2]:
-                    z_r = coordinate['red'][2]
-                if z == coordinate['red'][2]:  
+                if z == 2 * dz + coordinate["red"][2]:
+                    z_r = coordinate["red"][2]
+                if z == coordinate["red"][2]:
                     move_square = True
                     time.sleep(3)
                     move_square = False
@@ -190,7 +208,7 @@ def move():
                     unreachable = True
                 else:
                     unreachable = False
-                    time.sleep(result[2]/1000)
+                    time.sleep(result[2] / 1000)
 
                     if not __isRunning:
                         continue
@@ -218,39 +236,47 @@ def move():
 
                     if not __isRunning:
                         continue
-                    AK.setPitchRangeMoving((coordinate[detect_color][0], coordinate[detect_color][1], 12), -90, -90, 0, 1500) 
+                    AK.setPitchRangeMoving(
+                        (coordinate[detect_color][0], coordinate[detect_color][1], 12), -90, -90, 0, 1500
+                    )
                     time.sleep(1.5)
-                    
+
                     if not __isRunning:
-                        continue                  
+                        continue
                     servo2_angle = getAngle(coordinate[detect_color][0], coordinate[detect_color][1], -90)
                     Board.setBusServoPulse(2, servo2_angle, 500)
                     time.sleep(0.5)
 
                     if not __isRunning:
                         continue
-                    AK.setPitchRangeMoving((coordinate[detect_color][0], coordinate[detect_color][1], z + 3), -90, -90, 0, 500)
+                    AK.setPitchRangeMoving(
+                        (coordinate[detect_color][0], coordinate[detect_color][1], z + 3), -90, -90, 0, 500
+                    )
                     time.sleep(0.5)
-                    
+
                     if not __isRunning:
-                        continue                
-                    AK.setPitchRangeMoving((coordinate[detect_color][0], coordinate[detect_color][1], z), -90, -90, 0, 1000)
+                        continue
+                    AK.setPitchRangeMoving(
+                        (coordinate[detect_color][0], coordinate[detect_color][1], z), -90, -90, 0, 1000
+                    )
                     time.sleep(0.8)
 
                     if not __isRunning:
-                        continue 
+                        continue
                     Board.setBusServoPulse(1, servo1 - 200, 500)  # 爪子张开  ，放下物体
                     time.sleep(1)
 
                     if not __isRunning:
-                        continue 
-                    AK.setPitchRangeMoving((coordinate[detect_color][0], coordinate[detect_color][1], 12), -90, -90, 0, 800)
+                        continue
+                    AK.setPitchRangeMoving(
+                        (coordinate[detect_color][0], coordinate[detect_color][1], 12), -90, -90, 0, 800
+                    )
                     time.sleep(0.8)
 
                     initMove()  # 回到初始位置
                     time.sleep(1.5)
 
-                    detect_color = 'None'
+                    detect_color = "None"
                     get_roi = False
                     start_pick_up = False
                     set_rgb(detect_color)
@@ -261,8 +287,9 @@ def move():
                 time.sleep(0.5)
                 Board.setBusServoPulse(2, 500, 500)
                 AK.setPitchRangeMoving((0, 10, 10), -30, -30, -90, 1500)
-                time.sleep(1.5)               
+                time.sleep(1.5)
             time.sleep(0.01)
+
 
 # 运行子线程
 th = threading.Thread(target=move)
@@ -274,6 +301,8 @@ roi = ()
 center_list = []
 last_x, last_y = 0, 0
 draw_color = range_rgb["black"]
+
+
 def run(img):
     global roi
     global rect
@@ -289,7 +318,7 @@ def run(img):
     global world_X, world_Y
     global start_count_t1, t1
     global detect_color, draw_color, color_list
- 
+
     img_copy = img.copy()
     img_h, img_w = img.shape[:2]
     cv2.line(img, (0, int(img_h / 2)), (img_w, int(img_h / 2)), (0, 0, 200), 1)
@@ -300,17 +329,17 @@ def run(img):
 
     frame_resize = cv2.resize(img_copy, size, interpolation=cv2.INTER_NEAREST)
     frame_gb = cv2.GaussianBlur(frame_resize, (11, 11), 11)
-    #如果检测到某个区域有识别到的物体，则一直检测该区域直到没有为止
+    # 如果检测到某个区域有识别到的物体，则一直检测该区域直到没有为止
     if get_roi and not start_pick_up:
         get_roi = False
-        frame_gb = getMaskROI(frame_gb, roi, size)    
-    
+        frame_gb = getMaskROI(frame_gb, roi, size)
+
     frame_lab = cv2.cvtColor(frame_gb, cv2.COLOR_BGR2LAB)  # 将图像转换到LAB空间
 
     color_area_max = None
     max_area = 0
     areaMaxContour_max = 0
-    
+
     if not start_pick_up:
         for i in color_range:
             if i in __target_color:
@@ -327,27 +356,34 @@ def run(img):
         if max_area > 2500:  # 有找到最大面积
             rect = cv2.minAreaRect(areaMaxContour_max)
             box = np.int0(cv2.boxPoints(rect))
-            
-            roi = getROI(box) #获取roi区域
+
+            roi = getROI(box)  # 获取roi区域
             get_roi = True
 
             img_centerx, img_centery = getCenter(rect, roi, size, square_length)  # 获取木块中心坐标
-            
-            world_x, world_y = convertCoordinate(img_centerx, img_centery, size) #转换为现实世界坐标
+
+            world_x, world_y = convertCoordinate(img_centerx, img_centery, size)  # 转换为现实世界坐标
 
             if not start_pick_up:
                 cv2.drawContours(img, [box], -1, range_rgb[color_area_max], 2)
-                cv2.putText(img, '(' + str(world_x) + ',' + str(world_y) + ')', (min(box[0, 0], box[2, 0]), box[2, 1] - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, range_rgb[color_area_max], 1) #绘制中心点
-                distance = math.sqrt(pow(world_x - last_x, 2) + pow(world_y - last_y, 2)) #对比上次坐标来判断是否移动
+                cv2.putText(
+                    img,
+                    "(" + str(world_x) + "," + str(world_y) + ")",
+                    (min(box[0, 0], box[2, 0]), box[2, 1] - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.5,
+                    range_rgb[color_area_max],
+                    1,
+                )  # 绘制中心点
+                distance = math.sqrt(pow(world_x - last_x, 2) + pow(world_y - last_y, 2))  # 对比上次坐标来判断是否移动
             last_x, last_y = world_x, world_y
 
             if not start_pick_up:
-                if color_area_max == 'red':  # 红色最大
+                if color_area_max == "red":  # 红色最大
                     color = 1
-                elif color_area_max == 'green':  # 绿色最大
+                elif color_area_max == "green":  # 绿色最大
                     color = 2
-                elif color_area_max == 'blue':  # 蓝色最大
+                elif color_area_max == "blue":  # 蓝色最大
                     color = 3
                 else:
                     color = 0
@@ -377,30 +413,39 @@ def run(img):
                     color = int(round(np.mean(np.array(color_list))))
                     color_list = []
                     if color == 1:
-                        detect_color = 'red'
+                        detect_color = "red"
                         draw_color = range_rgb["red"]
                     elif color == 2:
-                        detect_color = 'green'
+                        detect_color = "green"
                         draw_color = range_rgb["green"]
                     elif color == 3:
-                        detect_color = 'blue'
+                        detect_color = "blue"
                         draw_color = range_rgb["blue"]
                     else:
-                        detect_color = 'None'
+                        detect_color = "None"
                         draw_color = range_rgb["black"]
         else:
             if not start_pick_up:
                 draw_color = (0, 0, 0)
                 detect_color = "None"
-    
+
     if move_square:
-        cv2.putText(img, "Make sure no blocks in the stacking area", (15, int(img.shape[0]/2)), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)    
-    
+        cv2.putText(
+            img,
+            "Make sure no blocks in the stacking area",
+            (15, int(img.shape[0] / 2)),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.9,
+            (0, 0, 255),
+            2,
+        )
+
     cv2.putText(img, "Color: " + detect_color, (10, img.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.65, draw_color, 2)
-    
+
     return img
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     init()
     start()
     my_camera = Camera.Camera()
@@ -409,8 +454,8 @@ if __name__ == '__main__':
         img = my_camera.frame
         if img is not None:
             frame = img.copy()
-            Frame = run(frame)           
-            cv2.imshow('Frame', Frame)
+            Frame = run(frame)
+            cv2.imshow("Frame", Frame)
             key = cv2.waitKey(1)
             if key == 27:
                 break

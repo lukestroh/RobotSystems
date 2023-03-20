@@ -284,7 +284,6 @@ class GrayscaleSensor:
         return self.grayscale_bus.write(message, tag=self.name)
 
     def _run(self, time_delay: float) -> None:
-
         while self.px.run:
             self.write_interpreter_bus(self.get_grayscale_data())
             time.sleep(time_delay)

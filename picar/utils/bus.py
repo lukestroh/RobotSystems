@@ -12,7 +12,6 @@ import time
 class ControllerBus(BasicBus):
     def __init__(self) -> None:
         super().__init__()
-        
 
         pass
 
@@ -20,14 +19,14 @@ class ControllerBus(BasicBus):
 class GrayscaleBus(BasicBus):
     def __init__(self) -> None:
         super().__init__()
-        self.message: List[int] = [0,0,0]
+        self.message: List[int] = [0, 0, 0]
         return
 
     # def run(self, time_limit):
     #     while self.message:
 
     #         time.sleep(time_limit)
-        # return
+    # return
 
 
 class CameraBus(BasicBus):

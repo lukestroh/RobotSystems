@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # coding=utf8
 import sys
-sys.path.append('/home/pi/ArmPi/')
+sys.path.append('/home/luke/ArmPi/')
 import cv2
 import time
 import Camera
@@ -14,17 +14,13 @@ from CameraCalibration.CalibrationConfig import *
 
 from typing import Tuple, List, Dict, Any
 
-if sys.version_info.major == 2:
-    print('Please run this program with python3!')
-    sys.exit(0)
-
-AK = ArmIK()
-
 
 
 
 class ColorTracking():
     def __init__(self) -> None:
+        self.AK = ArmIK()
+
         self.__target_color: Tuple[str, Any] = ('red', )
         
 
@@ -102,7 +98,7 @@ class ColorTracking():
         """
         Board.setBusServoPulse(1, self.servo1_grip_angle - 50, 300)
         Board.setBusServoPulse(2, 500, 500)
-        AK.setPitchRangeMoving((0, 10, 10), -30, -30, -90, 1500)
+        self.AK.setPitchRangeMoving((0, 10, 10), -30, -30, -90, 1500)
         return
 
 
@@ -275,7 +271,7 @@ class ColorTracking():
                     action_finish = False
                     self.set_rgb(self.detect_color)
                     self.setBuzzer(0.1)               
-                    result = AK.setPitchRangeMoving((self.world_X, self.world_Y - 2, 5), -90, -90, 0) # do not fill in the running time parameter, adaptive running time
+                    result = self.AK.setPitchRangeMoving((self.world_X, self.world_Y - 2, 5), -90, -90, 0) # do not fill in the running time parameter, adaptive running time
                     if result == False:
                         self.unreachable = True
                     else:
@@ -291,7 +287,7 @@ class ColorTracking():
                     if self.track: 
                         if not self.__isRunning: # Stop and exit flag detection
                             continue
-                        AK.setPitchRangeMoving((self.world_x, self.world_y - 2, 5), -90, -90, 0, 20)
+                        self.AK.setPitchRangeMoving((self.world_x, self.world_y - 2, 5), -90, -90, 0, 20)
                         time.sleep(0.02)                    
                         self.track = False
 
@@ -308,7 +304,7 @@ class ColorTracking():
                         
                         if not self.__isRunning:
                             continue
-                        AK.setPitchRangeMoving((self.world_X, self.world_Y, 2), -90, -90, 0, 1000)  # lower the altitude
+                        self.AK.setPitchRangeMoving((self.world_X, self.world_Y, 2), -90, -90, 0, 1000)  # lower the altitude
                         time.sleep(2)
                         
                         if not self.__isRunning:
@@ -319,13 +315,13 @@ class ColorTracking():
                         if not self.__isRunning:
                             continue
                         Board.setBusServoPulse(2, 500, 500)
-                        AK.setPitchRangeMoving((self.world_X, self.world_Y, 12), -90, -90, 0, 1000)  # Arm raised
+                        self.AK.setPitchRangeMoving((self.world_X, self.world_Y, 12), -90, -90, 0, 1000)  # Arm raised
                         time.sleep(1)
                         
                         if not self.__isRunning:
                             continue
                         # Classify and place blocks of different colors
-                        result = AK.setPitchRangeMoving((self.coordinate[self.detect_color][0], self.coordinate[self.detect_color][1], 12), -90, -90, 0)   
+                        result = self.AK.setPitchRangeMoving((self.coordinate[self.detect_color][0], self.coordinate[self.detect_color][1], 12), -90, -90, 0)   
                         time.sleep(result[2]/1000)
                         
                         if not self.__isRunning:
@@ -336,12 +332,12 @@ class ColorTracking():
 
                         if not self.__isRunning:
                             continue
-                        AK.setPitchRangeMoving((self.coordinate[self.detect_color][0], self.coordinate[self.detect_color][1], self.coordinate[self.detect_color][2] + 3), -90, -90, 0, 500)
+                        self.AK.setPitchRangeMoving((self.coordinate[self.detect_color][0], self.coordinate[self.detect_color][1], self.coordinate[self.detect_color][2] + 3), -90, -90, 0, 500)
                         time.sleep(0.5)
                         
                         if not self.__isRunning:
                             continue
-                        AK.setPitchRangeMoving((self.coordinate[self.detect_color]), -90, -90, 0, 1000)
+                        self.AK.setPitchRangeMoving((self.coordinate[self.detect_color]), -90, -90, 0, 1000)
                         time.sleep(0.8)
                         
                         if not self.__isRunning:
@@ -351,7 +347,7 @@ class ColorTracking():
                         
                         if not self.__isRunning:
                             continue                    
-                        AK.setPitchRangeMoving((self.coordinate[self.detect_color][0], self.coordinate[self.detect_color][1], 12), -90, -90, 0, 800)
+                        self.AK.setPitchRangeMoving((self.coordinate[self.detect_color][0], self.coordinate[self.detect_color][1], 12), -90, -90, 0, 800)
                         time.sleep(0.8)
 
                         self.initMove()  # Go back to initial position
@@ -371,7 +367,7 @@ class ColorTracking():
                     Board.setBusServoPulse(1, self.servo1_grip_angle - 70, 300)
                     time.sleep(0.5)
                     Board.setBusServoPulse(2, 500, 500)
-                    AK.setPitchRangeMoving((0, 10, 10), -30, -30, -90, 1500)
+                    self.AK.setPitchRangeMoving((0, 10, 10), -30, -30, -90, 1500)
                     time.sleep(1.5)
                 time.sleep(0.01)
 
@@ -466,6 +462,11 @@ class ColorTracking():
 
 
 if __name__ == '__main__':
+
+    if sys.version_info.major == 2:
+    print('Please run this program with python3!')
+    sys.exit(0)
+
     ct = ColorTracking()
     ct.init()
     ct.start()

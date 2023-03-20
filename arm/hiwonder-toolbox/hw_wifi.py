@@ -17,6 +17,7 @@ led_off_time = 100
 led1_pin = 16
 led2_pin = 26
 
+
 def update_globals(module):
     if module in sys.modules:
         mdl = importlib.reload(sys.modules[module])
@@ -52,12 +53,14 @@ def check_dependens(logger):
     if exit_ is True:
         sys.exit(-1)
 
+
 def led_setup():
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(led1_pin, GPIO.OUT)
     GPIO.output(led1_pin, 1)
     GPIO.setup(led2_pin, GPIO.OUT)
     GPIO.output(led2_pin, 0)
+
 
 def led_thread():
     global led_on_time
@@ -84,21 +87,21 @@ def led_thread():
 
         time.sleep(0.01)
 
-if __name__ == "__main__":
 
-    sn = get_cpu_serial_number()   #get cpu serial number
+if __name__ == "__main__":
+    sn = get_cpu_serial_number()  # get cpu serial number
     led_setup()
-    HW_WIFI_MODE = 1  #1 means AP mode, 2 means Client Mode, 3 means AP mode with eth0 internet share '
-    HW_WIFI_AP_SSID = ''.join(["HW-", sn[0:8]])
+    HW_WIFI_MODE = 1  # 1 means AP mode, 2 means Client Mode, 3 means AP mode with eth0 internet share '
+    HW_WIFI_AP_SSID = "".join(["HW-", sn[0:8]])
     HW_WIFI_STA_SSID = ""
     HW_WIFI_AP_PASSWORD = ""
     HW_WIFI_STA_PASSWORD = ""
     HW_WIFI_AKM_TYPE = pywifi.const.AKM_TYPE_WPA2PSK
     HW_WIFI_CIPHER_TYPE = pywifi.const.CIPHER_TYPE_CCMP
-    HW_WIFI_CHANNEL = 7 #149 153  157 161
+    HW_WIFI_CHANNEL = 7  # 149 153  157 161
     HW_WIFI_AP_GATEWAY = "192.168.149.1"
     HW_WIFI_COUNTRY = "US"
-    HW_WIFI_FREQ_BAND = 2.4 
+    HW_WIFI_FREQ_BAND = 2.4
     HW_WIFI_TIMEOUT = 30
     HW_WIFI_RESET_NOW = False
     HW_WIFI_LED = True
@@ -107,7 +110,7 @@ if __name__ == "__main__":
     logger.setLevel(logging.DEBUG)
     log_handler = logging.FileHandler(log_file_path)
     log_handler.setLevel(logging.INFO)
-    log_formatter = logging.Formatter('%(name)s - %(asctime)s - %(levelname)s - %(message)s')
+    log_formatter = logging.Formatter("%(name)s - %(asctime)s - %(levelname)s - %(message)s")
     log_handler.setFormatter(log_formatter)
     logger.addHandler(log_handler)
 
@@ -130,15 +133,15 @@ if __name__ == "__main__":
         os.system("rm " + internal_config_file_dir_path + "/__pycache__  -rf > /dev/null 2>&1")
         os.system("rm " + external_config_file_path + " > /dev/null 2>&1")
         os.system("rm " + external_config_file_dir_path + "/__pycache__  -rf > /dev/null 2>&1")
-        HW_WIFI_MODE = 1  
-        HW_WIFI_AP_SSID = ''.join(["HW-", sn[0:8]])
+        HW_WIFI_MODE = 1
+        HW_WIFI_AP_SSID = "".join(["HW-", sn[0:8]])
         HW_WIFI_STA_SSID = ""
         HW_WIFI_AP_PASSWORD = ""
         HW_WIFI_STA_PASSWORD = ""
         HW_WIFI_CHANNEL = 7
         HW_WIFI_AP_GATEWAY = "192.168.149.1"
         HW_WIFI_COUNTRY = "US"
-        HW_WIFI_FREQ_BAND = 2.4 
+        HW_WIFI_FREQ_BAND = 2.4
 
     def WIFI_MGR():
         global HW_WIFI_AP_SSID
@@ -147,32 +150,47 @@ if __name__ == "__main__":
         global HW_WIFI_STA_PASSWORD
         global led_on_time
         global led_off_time
-        if HW_WIFI_MODE == 1: #AP
+        if HW_WIFI_MODE == 1:  # AP
             led_on_time = 50
             led_off_time = 50
             os.system("set +o history > /dev/null 2>&1")
             os.system("pkill create_ap > /dev/null 2>&1")
             os.system("pkill hostapd > /dev/null 2>&1")
             os.system("pkill wpa_supplicant > /dev/null 2>&1")
-            if type(HW_WIFI_AP_PASSWORD) != str: #check password
+            if type(HW_WIFI_AP_PASSWORD) != str:  # check password
                 logger.error("Invalid HW_WIFI_PASSWORD")
                 HW_WIFI_AP_PASSWORD = ""
             if len(HW_WIFI_AP_PASSWORD) < 8 and HW_WIFI_AP_PASSWORD != "":
                 logger.error("password is too short")
                 HW_WIFI_AP_PASSWORD = ""
-            if type(HW_WIFI_AP_SSID) != str: #check ssid
+            if type(HW_WIFI_AP_SSID) != str:  # check ssid
                 logger.error("Invalid HW_WIFI_AP_SSID")
-                HW_WIFI_AP_SSID = ''.join(["HW-", sn[0:8]])
-            cmd = ''.join(["create_ap -n wlan0 --no-virt -g ", HW_WIFI_AP_GATEWAY ,  " --country ", HW_WIFI_COUNTRY, " --freq-band ", str(HW_WIFI_FREQ_BAND), " -c ", str(HW_WIFI_CHANNEL), " ", HW_WIFI_AP_SSID," ", HW_WIFI_AP_PASSWORD])
+                HW_WIFI_AP_SSID = "".join(["HW-", sn[0:8]])
+            cmd = "".join(
+                [
+                    "create_ap -n wlan0 --no-virt -g ",
+                    HW_WIFI_AP_GATEWAY,
+                    " --country ",
+                    HW_WIFI_COUNTRY,
+                    " --freq-band ",
+                    str(HW_WIFI_FREQ_BAND),
+                    " -c ",
+                    str(HW_WIFI_CHANNEL),
+                    " ",
+                    HW_WIFI_AP_SSID,
+                    " ",
+                    HW_WIFI_AP_PASSWORD,
+                ]
+            )
             print(cmd)
-            t = threading.Thread(target = lambda :os.system(cmd), daemon=True)
+            t = threading.Thread(target=lambda: os.system(cmd), daemon=True)
             logger.info("Create AP:" + HW_WIFI_AP_SSID)
             t.start()
             os.system("set -o history > /dev/null 2>&1")
             t.join()
             return -1
 
-        elif HW_WIFI_MODE == 2: #Client
+        elif HW_WIFI_MODE == 2:  # Client
             led_on_time = 5
             led_off_time = 5
             os.system("set +o history > /dev/null 2>&1")
@@ -180,7 +198,9 @@ if __name__ == "__main__":
             os.system("pkill hostapd > /dev/null 2>&1")
             os.system("pkill wpa_supplicant > /dev/null 2>&1")
             logger.info("Connecting to " + HW_WIFI_STA_SSID)
-            t = threading.Thread(target = lambda :os.system("wpa_supplicant -iwlan0 -C /var/run/wpa_supplicant"), daemon=True)
+            t = threading.Thread(
+                target=lambda: os.system("wpa_supplicant -iwlan0 -C /var/run/wpa_supplicant"), daemon=True
+            )
             t.start()
             os.system("set -o history > /dev/null 2>&1")
             time.sleep(2)
@@ -206,7 +226,7 @@ if __name__ == "__main__":
                 elif iface.status() == pywifi.const.IFACE_CONNECTED:
                     msg = "Connected to " + HW_WIFI_STA_SSID
                     logger.info(msg)
-                    threading.Thread(target= lambda: os.system("dhclient wlan0"), daemon=True).start()
+                    threading.Thread(target=lambda: os.system("dhclient wlan0"), daemon=True).start()
                     led_on_time = 100
                     led_off_time = 0
                     break
@@ -219,12 +239,13 @@ if __name__ == "__main__":
             return -1
         else:
             logger.error("Invalid HW_WIFI_MODE")
+
     if HW_WIFI_LED == True:
-        threading.Thread(target = led_thread, daemon=True).start()
+        threading.Thread(target=led_thread, daemon=True).start()
     while True:
         ret = WIFI_MGR()
         if ret == -1:
             sys.exit(0)
-        HW_WIFI_MODE = 1  #1 means AP mode, 2 means Client Mode, 3 means AP mode with eth0 internet share '
-        HW_WIFI_AP_SSID = ''.join(["HW-", sn[0:8]])
+        HW_WIFI_MODE = 1  # 1 means AP mode, 2 means Client Mode, 3 means AP mode with eth0 internet share '
+        HW_WIFI_AP_SSID = "".join(["HW-", sn[0:8]])
         HW_WIFI_AP_PASSWORD = ""

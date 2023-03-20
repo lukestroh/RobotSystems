@@ -9,6 +9,7 @@ import RPi.GPIO as GPIO
 import smbus
 import math
 
+
 class Pin(_Basic_class):
     def __init__(self, *value):
         super().__init__()
@@ -226,7 +227,6 @@ class PWM(I2C):
         self.REG_ARR = 0x44
         self.ADDR = 0x14
         self.CLOCK = 72000000
-    
 
         if isinstance(channel, str):
             if channel.startswith("P"):

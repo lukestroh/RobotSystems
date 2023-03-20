@@ -5,15 +5,14 @@ import sys
 import time
 
 if sys.version_info.major == 2:
-    print('Please run this program with python3!')
+    print("Please run this program with python3!")
     sys.exit(0)
 
+
 class PID:
-    """PID Controller
-    """
+    """PID Controller"""
 
     def __init__(self, P=0.2, I=0.0, D=0.0):
-
         self.Kp = P
         self.Ki = I
         self.Kd = D
@@ -53,13 +52,13 @@ class PID:
         delta_time = self.current_time - self.last_time
         delta_error = error - self.last_error
 
-        if (delta_time >= self.sample_time):
+        if delta_time >= self.sample_time:
             self.PTerm = self.Kp * error
             self.ITerm += error * delta_time
 
-            if (self.ITerm < -self.windup_guard):
+            if self.ITerm < -self.windup_guard:
                 self.ITerm = -self.windup_guard
-            elif (self.ITerm > self.windup_guard):
+            elif self.ITerm > self.windup_guard:
                 self.ITerm = self.windup_guard
 
             self.DTerm = 0.0
@@ -103,9 +102,9 @@ class PID:
         self.sample_time = sample_time
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     x_pid = PID(P=0.2, I=0, D=0)
     x_pid.SetPoint = 5
     x_pid.update(10)
     out = x_pid.output
-    print (out)
+    print(out)

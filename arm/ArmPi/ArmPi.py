@@ -14,22 +14,21 @@ import HiwonderSDK.Board as Board
 import Functions.Running as Running
 
 if sys.version_info.major == 2:
-    print('Please run this program with python3!')
+    print("Please run this program with python3!")
     sys.exit(0)
 
 QUEUE_RPC = queue.Queue(10)
+
 
 def startArmPi():
     global HWEXT, HWSONIC
 
     RPCServer.QUEUE = QUEUE_RPC
 
-    threading.Thread(target=RPCServer.startRPCServer,
-                     daemon=True).start()  # rpc服务器
-    threading.Thread(target=MjpgServer.startMjpgServer,
-                     daemon=True).start()  # mjpg流服务器
-    
-    loading_picture = cv2.imread('/home/pi/ArmPi/CameraCalibration/loading.jpg')
+    threading.Thread(target=RPCServer.startRPCServer, daemon=True).start()  # rpc服务器
+    threading.Thread(target=MjpgServer.startMjpgServer, daemon=True).start()  # mjpg流服务器
+
+    loading_picture = cv2.imread("/home/pi/ArmPi/CameraCalibration/loading.jpg")
     cam = Camera.Camera()  # 相机读取
     Running.cam = cam
 
@@ -58,6 +57,7 @@ def startArmPi():
         except KeyboardInterrupt:
             break
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     logging.basicConfig(level=logging.ERROR)
     startArmPi()

@@ -118,14 +118,12 @@ class Picarx(object):
             pin.period(self.PERIOD)
             pin.prescaler(self.PRESCALER)
 
-
         # need to make it so that each sensor/interpreter/control generates it's own bus so that instantiation works.
 
         # Bus (bus instantiation is in each sensor/interpreter class)
         self.grayscale_bus: GrayscaleBus
         self.ultrasonic_bus: UltrasonicBus
         self.interpreter_bus: InterpreterBus
-
 
         # Sensor
         adc0, adc1, adc2 = grayscale_pins
@@ -134,13 +132,13 @@ class Picarx(object):
         # usage: distance = self.ultrasonic.read()
         tring, echo = ultrasonic_pins
         self.ultrasonic = UltrasonicSensor(self, Pin(tring), Pin(echo))
-        
+
         # Interpreter
         self.interpreter = Interpreter(self, light_idx=1000, dark_idx=500, polarity="light")
 
         # Maneuver
         self.maneuver = Maneuver(self)
-        
+
         # Scheduler
         self.scheduler = Scheduler(self)
 
