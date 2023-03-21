@@ -399,11 +399,11 @@ class ColorTracking():
         area_max = 0
         areaMaxContour = 0
         if not self.start_pick_up:
-            for i in self.color_range:
+            for i in color_range:
                 if i in self.__target_color:
                     self.detect_color = i
                     # Perform bitwise operations on origional image and mask
-                    frame_mask = cv2.inRange(frame_lab, self.color_range[self.detect_color][0], self.color_range[self.detect_color][1])
+                    frame_mask = cv2.inRange(frame_lab, color_range[self.detect_color][0], color_range[self.detect_color][1])
                     # Open operation
                     opened = cv2.morphologyEx(frame_mask, cv2.MORPH_OPEN, np.ones((6, 6), np.uint8)) 
                     # Close operation

@@ -5,14 +5,16 @@ import signal
 print(
     """
 **********************************************************
-********功能:幻尔科技树莓派扩展板，RGB灯控制例程**********
+******Magic Er Technology Raspberry Pi expansion board****
+***********RGB light control routine**********************
 **********************************************************
 ----------------------------------------------------------
 Official website:http://www.lobot-robot.com/pc/index/index
 Online mall:https://lobot-zone.taobao.com/
 ----------------------------------------------------------
-以下指令均需在LX终端使用，LX终端可通过ctrl+alt+t打开，或点
-击上栏的黑色LX终端图标。
+The following commands can be used in the LX terminal,
+which can be opened by ctrl+alt+t, or click on the 
+black LX terminal icon on the upper bar.
 ----------------------------------------------------------
 Usage:
     sudo python3 RGBControlDemo.py
@@ -20,7 +22,8 @@ Usage:
 Version: --V1.0  2020/08/12
 ----------------------------------------------------------
 Tips:
- * 按下Ctrl+C可关闭此次程序运行，若失败请多次尝试！
+ * Press ctrl+c to close this program, if it fails,
+ please try again!
 ----------------------------------------------------------
 """
 )
@@ -33,7 +36,7 @@ def Stop(signum, frame):
     global start
 
     start = False
-    print("关闭中...")
+    print("Closing...")
 
 
 # 先将所有灯关闭
@@ -73,5 +76,5 @@ while True:
         Board.RGB.setPixelColor(0, Board.PixelColor(0, 0, 0))
         Board.RGB.setPixelColor(1, Board.PixelColor(0, 0, 0))
         Board.RGB.show()
-        print("已关闭")
+        print("closed")
         break

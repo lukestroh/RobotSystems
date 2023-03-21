@@ -1,0 +1,25 @@
+Traceback (most recent call last):
+  File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
+    self.run()
+  File "/usr/lib/python3.7/threading.py", line 865, in run
+    self._target(*self._args, **self._kwargs)
+  File "ColorPalletizing.py", line 206, in move
+    result = AK.setPitchRangeMoving((world_X, world_Y, 7), -90, -90, 0)  # 移到目标位置，高度5cm
+  File "/home/pi/ArmPi/ArmIK/ArmMoveIK.py", line 125, in setPitchRangeMoving
+    movetime = self.servosMove((servos["servo3"], servos["servo4"], servos["servo5"], servos["servo6"]), movetime)
+  File "/home/pi/ArmPi/ArmIK/ArmMoveIK.py", line 74, in servosMove
+    d = abs(getBusServoPulse(i + 3) - servos[i])
+  File "/home/pi/ArmPi/HiwonderSDK/Board.py", line 284, in getBusServoPulse
+    msg = serial_servo_get_rmsg(LOBOT_SERVO_POS_READ)
+  File "/home/pi/ArmPi/HiwonderSDK/BusServoCmd.py", line 139, in serial_servo_get_rmsg
+    count = serialHandle.inWaiting()    # 获取接收缓存中的字节数
+  File "/usr/lib/python3/dist-packages/serial/serialutil.py", line 590, in inWaiting
+    return self.in_waiting
+  File "/usr/lib/python3/dist-packages/serial/serialposix.py", line 467, in in_waiting
+    s = fcntl.ioctl(self.fd, TIOCINQ, TIOCM_zero_str)
+OSError: [Errno 5] Input/output error
+
+^CTraceback (most recent call last):
+  File "ColorPalletizing.py", line 458, in <module>
+    cv2.imshow("Frame", Frame)
+KeyboardInterrupt
