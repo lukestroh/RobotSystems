@@ -2,7 +2,7 @@
 # coding=utf8
 import sys
 
-sys.path.append("/home/pi/ArmPi/")
+sys.path.append("/home/luke/ArmPi/")
 import cv2
 import time
 import Camera
@@ -93,25 +93,12 @@ def set_rgb(color):
         Board.RGB.show()
 
 
-count = 0
-_stop = False
-color_list = []
-get_roi = False
-__isRunning = False
-move_square = False
-detect_color = "None"
-start_pick_up = False
-start_count_t1 = True
+
+
+
 # 放置坐标
-coordinate = {
-    "red": (-15 + 1, -7 - 0.5, 1.5),
-    "green": (-15 + 1, -7 - 0.5, 1.5),
-    "blue": (-15 + 1, -7 - 0.5, 1.5),
-}
-z_r = coordinate["red"][2]
-z_g = coordinate["green"][2]
-z_b = coordinate["blue"][2]
-z = z_r
+
+
 
 
 def reset():

@@ -74,10 +74,27 @@ class ColorTracking():
         self.world_x: int = 0
         self.world_y: int = 0
 
+        # From ColorPaletizing
+        self.move_square = False
+
+        # Google Tr says "Place coordinates". They do seem a bit different than the other set, but not far off..
+        # If it makes a difference, change the thing below? Or maybe we set a bool for which program is running?
+        # Or maybe they just hard coded in some values that are arbitrary and I can change them?
+        # self.palletizing_coordinates = {
+        #     "red": (-15 + 1, -7 - 0.5, 1.5),
+        #     "green": (-15 + 1, -7 - 0.5, 1.5),
+        #     "blue": (-15 + 1, -7 - 0.5, 1.5),
+        # }
+
+        self.z_r = self.coordinate["red"][2]
+        self.z_g = self.coordinate["green"][2]
+        self.z_b = self.coordinate["blue"][2]
+        self.z = self.z_r
+
         return
 
     
-    def setTargetColor(self, target_color: str) -> None:
+    def setTargetColor(self, target_color: str) -> Tuple[bool, tuple]:
         """ Set the detection color
         Parameters
         ----------
@@ -86,8 +103,8 @@ class ColorTracking():
         -------
             None
         """
-        self.__target_color = (target_color, )
-        return
+        self.__target_color = target_color
+        return (True,)
     
     
     def initMove(self) -> None:
@@ -200,7 +217,8 @@ class ColorTracking():
         self.start_count_t1 = True
         return
 
-    def init(self) -> None:
+    
+    def init(self, app: str):
         """ App initialization call
         Parameters
         ----------
@@ -209,12 +227,15 @@ class ColorTracking():
         -------
             None
         """
-        print("ColorTracking Init")
+        app = app.strip().lower()
+        if app == "palletizing":
+            print("ColorPalletizing Init")
+        elif app == "tracking":
+            print("Colortracking Init")
         self.initMove()
-        return
 
-    def start(self) -> None:
-        """ Start the colortracking
+    def start(self, app: str) -> None:
+        """ Start the app
         Parameters
         ----------
             None
@@ -224,7 +245,12 @@ class ColorTracking():
         """
         self.reset()
         self.__isRunning = True
-        print("ColorTracking Start")
+
+        app = app.strip().lower()
+        if app == "palletizing":
+            print("ColorPalletizing Start")
+        elif app == "tracking":
+            print("Colortracking Start")
         return
 
 
@@ -259,7 +285,7 @@ class ColorTracking():
 
 
     # Move robotic arm function
-    def move(self) -> None:
+    def move_color_tracking(self) -> None:
         """ Move the arm
         Parameters
         ----------
@@ -376,7 +402,7 @@ class ColorTracking():
 
 
 
-    def run(self, img) -> Any:
+    def run_color_tracking(self, img) -> Any:
 
         
         img_copy = img.copy()
@@ -460,6 +486,114 @@ class ColorTracking():
                         self.center_list = []
         return img
     
+    def move_color_palletizing(self):
+
+        self.dz = 2.5
+
+        while True:
+            if self.__isRunning:
+                # If it detects that the block has not moved for a hwile, start gripping.
+                if self.detect_color != "None" and self.start_pick_up:
+                    self.set_rgb(self.detect_color)
+                    self.setBuzzer(0.1)
+                    # "Highly Cumulative"
+                    self.z = self.z_r
+                    self.z_r += self.dz
+                    if self.z == 2 * self.dz + self.coordinate["red"][2]:
+                        self.z_r = self.coordinate["red"][2]
+                    if self.z == self.coordinate["red"][2]:
+                        self.move_square = True
+                        time.sleep(3)
+                        self.move_square = False
+
+                    # Move to the target position, height 5cm
+                    result = AK.setPitchRangeMoving((self.world_X, self.world_Y, 7), -90, -90, 0) 
+                    if result == False:
+                        self.unreachable = True
+                    else:
+                        self.unreachable = False
+                        time.sleep(result[2] / 1000)
+
+                        if not self.__isRunning:
+                            continue
+                        # Calculate the angle the gripper needs to rotate
+                        self.servo2_rotate_angle = getAngle(self.world_X, self.world_Y, self.rotation_angle)
+                        Board.setBusServoPulse(1, self.servo1_grip_angle - 280, 500)  # 爪子张开
+                        Board.setBusServoPulse(2, self.servo2_rotate_angle, 500)
+                        time.sleep(0.5)
+
+                        if not self.__isRunning:
+                            continue
+                        AK.setPitchRangeMoving((self.world_X, self.world_Y, 2), -90, -90, 0, 1000)  # 降低高度到2cm
+                        time.sleep(1.5)
+
+                        if not self.__isRunning:
+                            continue
+                        Board.setBusServoPulse(1, self.servo1_grip_angle, 500)  # 夹持器闭合
+                        time.sleep(0.8)
+
+                        if not self.__isRunning:
+                            continue
+                        Board.setBusServoPulse(2, 500, 500)
+                        AK.setPitchRangeMoving((self.world_X, self.world_Y, 12), -90, -90, 0, 1000)  # 机械臂抬起
+                        time.sleep(1)
+
+                        if not __isRunning:
+                            continue
+                        AK.setPitchRangeMoving(
+                            (self.coordinate[self.detect_color][0], self.coordinate[self.detect_color][1], 12), -90, -90, 0, 1500
+                        )
+                        time.sleep(1.5)
+
+                        if not self.__isRunning:
+                            continue
+                        self.servo2_rotate_angle = getAngle(self.coordinate[self.detect_color][0], self.coordinate[self.detect_color][1], -90)
+                        Board.setBusServoPulse(2, self.servo2_rotate_angle, 500)
+                        time.sleep(0.5)
+
+                        if not self.__isRunning:
+                            continue
+                        AK.setPitchRangeMoving(
+                            (self.coordinate[self.detect_color][0], self.coordinate[self.detect_color][1], self.z + 3), -90, -90, 0, 500
+                        )
+                        time.sleep(0.5)
+
+                        if not self.__isRunning:
+                            continue
+                        AK.setPitchRangeMoving(
+                            (self.coordinate[self.detect_color][0], self.coordinate[self.detect_color][1], self.z), -90, -90, 0, 1000
+                        )
+                        time.sleep(0.8)
+
+                        if not self.__isRunning:
+                            continue
+                        Board.setBusServoPulse(1, self.servo1_grip_angle - 200, 500)  # 爪子张开  ，放下物体
+                        time.sleep(1)
+
+                        if not self.__isRunning:
+                            continue
+                        AK.setPitchRangeMoving(
+                            (self.coordinate[self.detect_color][0], self.coordinate[self.detect_color][1], 12), -90, -90, 0, 800
+                        )
+                        time.sleep(0.8)
+
+                        self.initMove()  # 回到初始位置
+                        time.sleep(1.5)
+
+                        self.detect_color = "None"
+                        self.get_roi = False
+                        self.start_pick_up = False
+                        self.set_rgb(self.detect_color)
+            else:
+                if _stop:
+                    _stop = False
+                    Board.setBusServoPulse(1, self.servo1_grip_angle - 70, 300)
+                    time.sleep(0.5)
+                    Board.setBusServoPulse(2, 500, 500)
+                    AK.setPitchRangeMoving((0, 10, 10), -30, -30, -90, 1500)
+                    time.sleep(1.5)
+                time.sleep(0.01)
+    
 
 
 
@@ -470,29 +604,47 @@ if __name__ == '__main__':
         print('Please run this program with python3!')
         sys.exit(0)
 
+
+    # Decide which method we are going to run (improve this!)
+    app = "palletizing"
+
+
+
+    
+
+    # Start the color tracking
     ct = ColorTracking()
-    ct.init()
-    ct.start()
+    ct.init(app=app)
+    ct.start(app=app)
 
 
     # run the child thread (parent??)
-    th = threading.Thread(target=ct.move)
+    if app == "tracking":
+        th = threading.Thread(target=ct.move_color_tracking)
+    elif app == "palletizing":
+        th = threading.Thread(target=ct.move_color_palletizing)    
     th.setDaemon(True)
     th.start()
 
 
 
-    __target_color = ('red', )
     my_camera = Camera.Camera()
     my_camera.camera_open()
     while True:
         img = my_camera.frame
         if img is not None:
             frame = img.copy()
-            Frame = ct.run(frame)           
+
+            # Choose frame based on method.... (improve this!)
+            if app == "tracking":
+                Frame = ct.run_color_tracking(frame)
+            elif app == "palletizing":
+                Frame = ct.run_color_palletizing(frame)
+          
             cv2.imshow('Frame', Frame)
             key = cv2.waitKey(1)
             if key == 27:
                 break
+
     my_camera.camera_close()
     cv2.destroyAllWindows()
