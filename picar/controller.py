@@ -36,6 +36,28 @@ class Controller:
     #         self.px.maneuver.follow_line()
     #     return
 
+    def run_once(self):
+        # get interpreter data
+        self.control_data["ultrasonic_data"] = self.read_ultrasonic_bus()
+        self.control_data["interpreter_data"] = self.read_interpreter_bus()
+        # print(self.control_data)
+        return self.control_data
+
+        
+
+        ##### Right now, the steering angle is being determined in Interpreter.py, which seems like the wrong place. 
+        # Since the angle is calculated in the interpreter though, i'll need a system-wide variable that holds the task that we're doing?
+        # Yes I think I like that.
+
+        # # do something, if completed, self.px.run = False
+        # self.get_maneuver(user_input)
+
+        
+
+        # update ultrasonic data before the next loop
+        
+
+
 
     def _run(self, time_delay: float, user_input=None) -> None: # maybe could operate this as an *args **kwargs situation
 
@@ -51,18 +73,14 @@ class Controller:
                 # get interpreter data
                 self.control_data["interpreter_data"] = self.read_interpreter_bus()
 
-                
-
-                ##### Right now, the steering angle is being determined in Interpreter.py, which seems like the wrong place. 
-                # Since the angle is calculated in the interpreter though, i'll need a system-wide variable that holds the task that we're doing?
-                # Yes I think I like that.
-
-                # # do something, if completed, self.px.run = False
-                # self.get_maneuver(user_input)
-
+                #### That means these are going to throw errors... ? because the functions aren't declared yet?
                 self.px.set_dir_servo_angle(self.control_data["interpreter_data"]["steering_angle"])
                 self.px.foward(self.car_speed)
+
+                # thread loop delay
                 time.sleep(time_delay)
+
+                # update ultrasonic data before the next loop
                 self.control_data["ultrasonic_data"] = self.read_ultrasonic_bus()
 
 
@@ -82,7 +100,21 @@ def main():
     px = Picarx()
     px.run = True
 
-    px.controller._run(time_delay=1)
+    while True:
+        px.ultrasonic_sensor.write_ultrasonic_bus(px.ultrasonic_sensor.read())
+
+# input()
+            
+        
+        px.grayscale_sensor.write_grayscale_bus(px.grayscale_sensor.get_grayscale_data()) # should change this function name to read()
+        px.interpreter.run_once()
+    
+        control_data = px.controller.run_once()
+        px.set_dir_servo_angle(control_data["interpreter_data"]["steering_angle"])
+        if control_data["ultrasonic_data"] > 10:
+            px.forward(40)
+        else:
+            px.stop()
 
 
     return

@@ -48,6 +48,10 @@ class Interpreter:
         self.name = "interpreter"
 
         self.bus_contents = {}
+        
+        self.grayscale_bus.read()
+        self.set_initial_gs_vals(self.grayscale_bus.read())
+        return
 
     def set_initial_gs_vals(self, greyscale_data: List[int]) -> None:
         self.left_deq.append(greyscale_data[0])
@@ -55,7 +59,8 @@ class Interpreter:
         self.right_deq.append(greyscale_data[2])
         return
 
-    def get_steering_scale(self, greyscale_data: List[int]) -> float:
+    def get_steering_scale(self) -> float:
+        greyscale_data = self.bus_contents["grayscale_data"]
         self.left_curr = greyscale_data[0]
         self.mid_curr = greyscale_data[1]
         self.right_curr = greyscale_data[2]
@@ -74,9 +79,9 @@ class Interpreter:
         self.mid_deq.append(self.mid_curr)
         self.right_deq.append(self.right_curr)
 
-        # off track case
-        if left_diff > self.deriv_thresh and right_diff > self.deriv_thresh and mid_diff > self.deriv_thresh:
-            return None
+        # # off track case
+        # if left_diff > self.deriv_thresh and right_diff > self.deriv_thresh and mid_diff > self.deriv_thresh:
+            # return None
 
         # sensor side differences
         left_mid_der = self.left_curr - mid_avg
@@ -94,9 +99,9 @@ class Interpreter:
         else:
             return steer_scale * self.max_steer_angle
 
-    def follow_line(self, greyscale_data: List[int]):
+    def follow_line(self):
         """main function here"""
-        steer_scale = self.get_steering_scale(greyscale_data)
+        steer_scale = self.get_steering_scale()
         if steer_scale is None:
             return None
         else:
@@ -104,20 +109,27 @@ class Interpreter:
             return steer_angle
 
     @log_on_error(logging.DEBUG, "Error reading the sensor bus.")
-    def read_sensor_bus(self) -> dict:
-        self.bus_contents["grayscale"] = self.grayscale_bus.read(tag=self.name)
+    def read_sensor_buses(self) -> dict:
+        self.bus_contents["grayscale_data"] = self.grayscale_bus.read(tag=self.name)
         # self.bus_contents["camera"] = self.camera_bus.read()
-        return self.bus_contents
+        return # self.bus_contents
 
     @log_on_error(logging.DEBUG, "Error writing the interpreter bus.")
     def write_interpreter_bus(self, message: float) -> None:
         return self.interpreter_bus.write(message, tag=self.name)
+    
+    def run_once(self):
+        self.read_sensor_buses()
+        self.bus_contents["steering_angle"] = self.follow_line()
+        self.write_interpreter_bus(self.bus_contents)
+        return
 
     @log_on_error(logging.DEBUG, "Error on interpreter._run")
     def _run(self, time_delay: float) -> None:
         while self.px.run:
             ###### The follow-line stuff is here, but the other maneuvers are in maneuver. Maybe centralize the movement?
-            self.bus_contents["steering_angle"] = self.follow_line(self.read_sensor_bus()["grayscale"])
+            self.read_sensor_buses()
+            self.bus_contents["steering_angle"] = self.follow_line()
             # print(self.bus_contents)
 
             self.write_interpreter_bus(self.bus_contents)

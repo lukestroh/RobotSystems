@@ -280,12 +280,12 @@ class GrayscaleSensor:
         adc_value_list.append(self.chn_2.read())
         return adc_value_list
 
-    def write_interpreter_bus(self, message: Any) -> None:
+    def write_grayscale_bus(self, message: Any) -> None:
         return self.grayscale_bus.write(message, tag=self.name)
 
     def _run(self, time_delay: float) -> None:
         while self.px.run:
-            self.write_interpreter_bus(self.get_grayscale_data())
+            self.write_grayscale_bus(self.get_grayscale_data())
             time.sleep(time_delay)
 
 #####################################################################
