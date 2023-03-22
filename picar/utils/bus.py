@@ -5,7 +5,7 @@ Luke Strohbehn
 """
 
 from picar.utils.basicbus import BasicBus
-from typing import Any, List
+from typing import Any, List, Union
 import time
 
 
@@ -39,7 +39,8 @@ class CameraBus(BasicBus):
 class UltrasonicBus(BasicBus):
     def __init__(self) -> None:
         super().__init__()
-        pass
+        self.message: Union[int, float]
+        return
 
 
 class InterpreterBus(BasicBus):
@@ -49,4 +50,4 @@ class InterpreterBus(BasicBus):
 
         # make a dictionary for each of the types of data, (and give them priority numbers?)
 
-        pass
+        return

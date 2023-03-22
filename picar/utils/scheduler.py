@@ -32,6 +32,7 @@ class Scheduler:
         controller_delay = 0.5
         ultrasonic_delay = 0.5
 
+
         try:
             with cf.ThreadPoolExecutor(max_workers=3) as executor:
                 # ultrasonic
@@ -48,13 +49,14 @@ class Scheduler:
                 # controller
                 controller = executor.submit(self.controller._run, controller_delay, user_input)
                 
-                # wait for the 
+                
                 processes = [ultrasonic, grayscale, interpreter, controller]
                 print(processes)
 
                 # cf.wait waits for the Future objects have completed. 
                 # Options include "FIRST_EXCEPTION", "FIRST_COMPLETED", and "ALL_COMPLETED"
                 cf.wait(processes, return_when="FIRST_EXCEPTION")
+                # cf.wait(processes, return_when="FIRST_COMPLETED")
 
                 """
                 [<Future at 0xb54d9fb0 state=finished raised AttributeError>, <Future at 0xb54eb1f0 state=running>, <Future at 0xb54ebd70 state=running>, <Future at 0xb54ebef0 state=pending>]

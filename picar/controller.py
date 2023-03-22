@@ -12,7 +12,7 @@ class Controller:
         self.interpreter_bus = px.interpreter_bus
         self.ultrasonic_bus = px.ultrasonic_bus
         self.px = px
-        self.car_speed = 40
+        self.car_speed = 20
 
         self.actions: dict = {
 
@@ -26,26 +26,24 @@ class Controller:
     def read_ultrasonic_bus(self) -> Any:
         return self.ultrasonic_bus.read(tag=self.name)
 
-    def get_maneuver(self, user_input: str) -> None:
-        user_command = self.px.COMMAND_DICT[user_input]
-        if user_command == "parallel_park":
-            self.px.maneuver.parallel_park()
-        elif user_command == "k_turn":
-            self.px.maneuver.k_turn()
-        elif user_command == "follow_line":
-            self.px.maneuver.follow_line()
-        return
+    # def get_maneuver(self, user_input: str) -> None:
+    #     user_command = self.px.COMMAND_DICT[user_input]
+    #     if user_command == "parallel_park":
+    #         self.px.maneuver.parallel_park()
+    #     elif user_command == "k_turn":
+    #         self.px.maneuver.k_turn()
+    #     elif user_command == "follow_line":
+    #         self.px.maneuver.follow_line()
+    #     return
 
 
     def _run(self, time_delay: float, user_input) -> None: # maybe could operate this as an *args **kwargs situation
 
+        self.control_data["ultrasonic_data"] = self.read_ultrasonic_bus(self)
 
-
-        while self.px.run:
+        while self.px.run and self.control_data["ultrasonic_data"] > 10:
             # get ultrasonic data, maybe make loop more frequent? Or maybe the ultrasonic should have its own controller?
-            self.control_data["ultrasonic_data"] = self.read_ultrasonic_bus(self)
-            if self.control_data["ultrasonic_data"] < 10:
-                self.px.stop()
+            
 
 
             # get interpreter data
@@ -63,6 +61,9 @@ class Controller:
             self.px.set_dir_servo_angle(self.control_data["interpreter_data"]["steering_angle"])
             self.px.foward(self.car_speed)
             time.sleep(time_delay)
+
+        while self.px.run and self.control_data["ultrasonic_data"] <= 10:
+            time.sleep(time_delay * 10) # just sleep a bit longer? Make this larger once we make sensor input quicker
 
 
 
