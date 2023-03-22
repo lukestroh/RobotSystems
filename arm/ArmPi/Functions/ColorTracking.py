@@ -91,6 +91,9 @@ class ColorTracking():
         self.z_b = self.coordinate["blue"][2]
         self.z = self.z_r
 
+        self.draw_color: Tuple[int, int, int] = self.range_rgb["red"]
+        self.color_list: list = []
+
         return
 
     

@@ -94,6 +94,8 @@ class Maneuver:
             self.px.forward(0)
             return
 
+
+    # a full loop, cannot be used in Threading
     def follow_line(self):
         self.interpreter.set_initial_gs_vals(self.px.get_grayscale_data())
         try:

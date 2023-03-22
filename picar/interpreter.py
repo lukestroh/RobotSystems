@@ -95,6 +95,7 @@ class Interpreter:
             return steer_scale * self.max_steer_angle
 
     def follow_line(self, greyscale_data: List[int]):
+        """main function here"""
         steer_scale = self.get_steering_scale(greyscale_data)
         if steer_scale is None:
             return None
