@@ -1,4 +1,4 @@
-#!/usr/bin/env/python3
+#!/usr/bin/env python3
 """
 user_input.py
 Luke Strohbehn
@@ -6,7 +6,7 @@ Luke Strohbehn
 
 
 def user_input(px):
-    print("What command do you want to run?")
+    print("\nWhat command do you want to run?")
     for key, value in px.COMMAND_DICT.items():
         print(key, value)
 

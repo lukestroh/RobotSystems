@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python3
 import logging
-import time
 
 
 class _Basic_class(object):

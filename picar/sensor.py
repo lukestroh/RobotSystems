@@ -1,4 +1,4 @@
-#!/usr/bin/env/python3
+#!/usr/bin/env python3
 """
 sensors.py
 Luke Strohbehn
@@ -8,7 +8,7 @@ from picar.utils.basic import _Basic_class
 # from motor import Motor
 import time
 from picar.utils.bus import GrayscaleBus, UltrasonicBus
-from typing import Any
+from typing import Any, List, Union
 
 from smbus import SMBus
 
@@ -218,14 +218,15 @@ class ADC(I2C):
 
 
 class UltrasonicSensor:
-    def __init__(self, px, trig, echo, timeout=0.02):
+    def __init__(self, px, trig, echo, timeout=0.02) -> None:
         self.trig = trig
         self.echo = echo
         self.timeout = timeout
         self.ultrasonic_bus = px.ultrasonic_bus = UltrasonicBus()
+        self.name = "ultrasonic_sensor"
         return
 
-    def _read(self):
+    def _read(self) -> Union[int, float]:
         self.trig.low()
         time.sleep(0.01)
         self.trig.high()
@@ -246,52 +247,66 @@ class UltrasonicSensor:
         cm = round(during * 340 / 2 * 100, 2)
         return cm
 
-    def read(self, times=10):
+    def read(self, times=10) -> Union[int, float]:
         for i in range(times):
             a = self._read()
             if a != -1:
                 return a
         return -1
 
-    def write_interpreter_bus(self, message: Any):
-        return self.interpreter_bus.write(message)
+    def write_ultrasonic_bus(self, message: Any) -> None:
+        return self.ultrasonic_bus.write(message, tag=self.name)
 
-    def run(self, time_delay: float):
-        while True:
-            self.interpreter_bus.write(self.read())
+    def _run(self, time_delay: float) -> None:
+        while self.px.run:
+            self.write_ultasonic_bus(self.read())
             time.sleep(time_delay)
 
 
 class GrayscaleSensor:
-    def __init__(self, px, pin0, pin1, pin2, reference=1000):
+    def __init__(self, px, pin0, pin1, pin2, reference=1000) -> None:
         self.chn_0 = ADC(pin0)
         self.chn_1 = ADC(pin1)
         self.chn_2 = ADC(pin2)
         self.reference = reference
         self.grayscale_bus = px.grayscale_bus = GrayscaleBus()
+        self.px = px
+        self.name = "grayscale_sensor"
 
-    def get_grayscale_data(self):
+    def get_grayscale_data(self) -> List[int]:
         adc_value_list = []
         adc_value_list.append(self.chn_0.read())
         adc_value_list.append(self.chn_1.read())
         adc_value_list.append(self.chn_2.read())
         return adc_value_list
 
-    def write_interpreter_bus(self, message: Any):
-        return self.grayscale_bus.write(message)
+    def write_grayscale_bus(self, message: Any) -> None:
+        return self.grayscale_bus.write(message, tag=self.name)
 
-    def run(self, time_delay: float):
-        while True:
-            self.write_interpreter_bus(self.get_grayscale_data())
+    def _run(self, time_delay: float) -> None:
+        while self.px.run:
+            self.write_grayscale_bus(self.get_grayscale_data())
             time.sleep(time_delay)
+
+#####################################################################
 
 
 def main():
-    grayscale_pins: list = ["A0", "A1", "A2"]
+    from picar.motor import Pin
+    from picar.picarx import Picarx
+    # grayscale_pins = ["A0", "A1", "A2"]
+    px = Picarx()
 
-    greyscale = GrayscaleSensor(grayscale_pins[0], grayscale_pins[1], grayscale_pins[2])
-    # ultrasonic = Ultrasonic()
+    # greyscale = GrayscaleSensor(grayscale_pins[0], grayscale_pins[1], grayscale_pins[2])
+    
+    px.ultrasonic_sensor = UltrasonicSensor(px, Pin("D2"), Pin("D3"))
+
+    while True:
+        px.ultrasonic_sensor.write_ultrasonic_bus(px.ultrasonic_sensor.read())
+        print(px.ultrasonic_bus.read(tag="hello!"))
     return
+
+
 
 
 if __name__ == "__main__":

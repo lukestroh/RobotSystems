@@ -1,31 +1,27 @@
-#!/usr/bin/env/python3
+#!/usr/bin/env python3
 """
 bus.py
 Luke Strohbehn
 """
 
 from picar.utils.basicbus import BasicBus
-from typing import Any
+from typing import Any, List, Union
 import time
 
 
-class ControllerBus(BasicBus):
-    def __init__(self) -> None:
-        super().__init__()
-
-        pass
 
 
 class GrayscaleBus(BasicBus):
     def __init__(self) -> None:
         super().__init__()
+        self.message: List[int] = [0, 0, 0]
         return
 
-    def run(self, time_limit):
-        while self.message:
+    # def run(self, time_limit):
+    #     while self.message:
 
-            time.sleep(time_limit)
-        return
+    #         time.sleep(time_limit)
+    # return
 
 
 class CameraBus(BasicBus):
@@ -38,13 +34,15 @@ class CameraBus(BasicBus):
 class UltrasonicBus(BasicBus):
     def __init__(self) -> None:
         super().__init__()
-        pass
+        self.message: Union[int, float] = 0.0
+        return
 
 
 class InterpreterBus(BasicBus):
     def __init__(self) -> None:
         super().__init__()
+        self.message: dict = {}
 
         # make a dictionary for each of the types of data, (and give them priority numbers?)
 
-        pass
+        return

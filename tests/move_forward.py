@@ -10,7 +10,7 @@ def main():
     try:
         px=picarx.Picarx()
         px.forward(40)
-        time.sleep(5)
+        time.sleep(60)
         px.stop()
         return 1
     except Exception as e:

@@ -1,4 +1,4 @@
-#!/usr/bin/env/python3
+#!/usr/bin/env python3
 """
 maneuver.py
 Luke Strohbehn
@@ -13,6 +13,7 @@ class Maneuver:
         self.maneuver_speed = 40
         self.range = 1
         self.px = px
+        self.interpreter = px.interpreter
         pass
 
     def forward_backward(self, forward=True, angle=0):
@@ -93,13 +94,16 @@ class Maneuver:
             self.px.forward(0)
             return
 
-    def follow_line(self):
-        self.px.gs_interpreter.set_initial_gs_vals(self.px.get_grayscale_data())
+
+    # a full loop, cannot be used in Threading
+    def follow_line_forever(self):
+        self.interpreter.set_initial_gs_vals(self.px.get_grayscale_data())
         try:
             while True:
                 gs_data = self.px.get_grayscale_data()
 
-                steer_angle = self.px.gs_interpreter.follow_line(gs_data)
+                ##########  We just want to grab the bus values here now, since we get the steering angle from the interpreter
+                steer_angle = self.interpreter.follow_line(gs_data)
                 if steer_angle is None:
                     self.px.stop()
                 else:

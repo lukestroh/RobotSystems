@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 """
 sim_robot_hat.py
 Luke Strohbehn
@@ -150,7 +150,6 @@ class Pin(_Basic_class):
 
     def value(self, *value: Any) -> Any:
         if len(value) == 0:
-
             return 0
         else:
             value = value[0]
@@ -528,7 +527,6 @@ class Grayscale_Module(object):
         self.reference = reference
 
     def get_line_status(self, fl_list):
-
         if fl_list[0] > self.reference and fl_list[1] > self.reference and fl_list[2] > self.reference:
             return "stop"
 
