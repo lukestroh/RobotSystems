@@ -96,7 +96,7 @@ class Maneuver:
 
 
     # a full loop, cannot be used in Threading
-    def follow_line(self):
+    def follow_line_forever(self):
         self.interpreter.set_initial_gs_vals(self.px.get_grayscale_data())
         try:
             while True:
