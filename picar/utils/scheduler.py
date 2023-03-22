@@ -27,10 +27,17 @@ class Scheduler:
         # delays
         self.px.run = True
 
+        
+
         grayscale_delay = 0.5
         interpreter_delay = 0.5
         controller_delay = 0.5
         ultrasonic_delay = 0.5
+
+        # grayscale_delay = 0.001
+        # interpreter_delay = 0.001
+        # controller_delay = 0.001
+        # ultrasonic_delay = 0.001
 
 
         try:

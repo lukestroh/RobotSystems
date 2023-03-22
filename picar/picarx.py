@@ -245,6 +245,8 @@ class Picarx(object):
 
     @log_on_error(logging.DEBUG, "Error in forward motion.")
     def forward(self, speed):
+        if speed < 20:
+            raise ValueError(f"Input speed {speed} in px.forward() is too low, minimum 20.")
         current_angle = self.dir_current_angle
         if current_angle != 0:
             abs_current_angle = abs(current_angle)

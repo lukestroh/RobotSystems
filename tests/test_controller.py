@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
-from picar import picarx
+from picar.picarx import Picarx
+import time
 
 
 def main():
     
 
-    px = picarx.Picarx()
+    px = Picarx()
     px.run = True
 
     while True:
@@ -26,6 +27,7 @@ def main():
 
         else:
             px.stop()
+            time.sleep(3)
 
 
     return
