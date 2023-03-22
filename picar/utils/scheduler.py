@@ -51,7 +51,10 @@ class Scheduler:
                 # wait for the 
                 processes = [ultrasonic, grayscale, interpreter, controller]
                 print(processes)
-                cf.wait(processes, return_when="FIRST_COMPLETED")
+
+                # cf.wait waits for the Future objects have completed. 
+                # Options include "FIRST_EXCEPTION", "FIRST_COMPLETED", and "ALL_COMPLETED"
+                cf.wait(processes, return_when="FIRST_EXCEPTION")
 
                 """
                 [<Future at 0xb54d9fb0 state=finished raised AttributeError>, <Future at 0xb54eb1f0 state=running>, <Future at 0xb54ebd70 state=running>, <Future at 0xb54ebef0 state=pending>]
