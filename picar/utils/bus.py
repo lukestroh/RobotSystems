@@ -9,11 +9,6 @@ from typing import Any, List, Union
 import time
 
 
-class ControllerBus(BasicBus):
-    def __init__(self) -> None:
-        super().__init__()
-
-        pass
 
 
 class GrayscaleBus(BasicBus):
@@ -39,14 +34,14 @@ class CameraBus(BasicBus):
 class UltrasonicBus(BasicBus):
     def __init__(self) -> None:
         super().__init__()
-        self.message: Union[int, float]
+        self.message: Union[int, float] = 0.0
         return
 
 
 class InterpreterBus(BasicBus):
     def __init__(self) -> None:
         super().__init__()
-        self.message: dict
+        self.message: dict = {}
 
         # make a dictionary for each of the types of data, (and give them priority numbers?)
 

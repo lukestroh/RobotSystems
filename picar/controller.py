@@ -37,33 +37,56 @@ class Controller:
     #     return
 
 
-    def _run(self, time_delay: float, user_input) -> None: # maybe could operate this as an *args **kwargs situation
+    def _run(self, time_delay: float, user_input=None) -> None: # maybe could operate this as an *args **kwargs situation
 
-        self.control_data["ultrasonic_data"] = self.read_ultrasonic_bus(self)
+        self.control_data["ultrasonic_data"] = self.read_ultrasonic_bus()
 
-        while self.px.run and self.control_data["ultrasonic_data"] > 10:
-            # get ultrasonic data, maybe make loop more frequent? Or maybe the ultrasonic should have its own controller?
-            
+        while self.px.run:
 
-
-            # get interpreter data
-            self.control_data["interpreter_data"] = self.read_interpreter_bus(self)
-
-            
-
-            ##### Right now, the steering angle is being determined in Interpreter.py, which seems like the wrong place. 
-            # Since the angle is calculated in the interpreter though, i'll need a system-wide variable that holds the task that we're doing?
-            # Yes I think I like that.
-
-            # # do something, if completed, self.px.run = False
-            # self.get_maneuver(user_input)
-
-            self.px.set_dir_servo_angle(self.control_data["interpreter_data"]["steering_angle"])
-            self.px.foward(self.car_speed)
-            time.sleep(time_delay)
-
-        while self.px.run and self.control_data["ultrasonic_data"] <= 10:
-            time.sleep(time_delay * 10) # just sleep a bit longer? Make this larger once we make sensor input quicker
+            while self.control_data["ultrasonic_data"] > 10:
+                # get ultrasonic data, maybe make loop more frequent? Or maybe the ultrasonic should have its own controller?
+                
 
 
+                # get interpreter data
+                self.control_data["interpreter_data"] = self.read_interpreter_bus()
 
+                
+
+                ##### Right now, the steering angle is being determined in Interpreter.py, which seems like the wrong place. 
+                # Since the angle is calculated in the interpreter though, i'll need a system-wide variable that holds the task that we're doing?
+                # Yes I think I like that.
+
+                # # do something, if completed, self.px.run = False
+                # self.get_maneuver(user_input)
+
+                self.px.set_dir_servo_angle(self.control_data["interpreter_data"]["steering_angle"])
+                self.px.foward(self.car_speed)
+                time.sleep(time_delay)
+                self.control_data["ultrasonic_data"] = self.read_ultrasonic_bus()
+
+
+            while self.control_data["ultrasonic_data"] <= 10:
+                print(self.read_ultrasonic_bus())
+                # get interpreter data
+                self.control_data["interpreter_data"] = self.read_interpreter_bus()
+
+                time.sleep(time_delay) # just sleep a bit longer? Make this larger once we make sensor input quicker
+                self.control_data["ultrasonic_data"] = self.read_ultrasonic_bus()
+
+
+
+def main():
+    from picar.picarx import Picarx
+
+    px = Picarx()
+    px.run = True
+
+    px.controller._run(time_delay=1)
+
+
+    return
+
+
+if __name__ == "__main__":
+    main()

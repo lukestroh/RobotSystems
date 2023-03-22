@@ -288,13 +288,25 @@ class GrayscaleSensor:
             self.write_interpreter_bus(self.get_grayscale_data())
             time.sleep(time_delay)
 
+#####################################################################
+
 
 def main():
-    grayscale_pins = ["A0", "A1", "A2"]
+    from picar.motor import Pin
+    from picar.picarx import Picarx
+    # grayscale_pins = ["A0", "A1", "A2"]
+    px = Picarx()
 
-    greyscale = GrayscaleSensor(grayscale_pins[0], grayscale_pins[1], grayscale_pins[2])
-    # ultrasonic = Ultrasonic()
+    # greyscale = GrayscaleSensor(grayscale_pins[0], grayscale_pins[1], grayscale_pins[2])
+    
+    px.ultrasonic_sensor = UltrasonicSensor(px, Pin("D2"), Pin("D3"))
+
+    while True:
+        px.ultrasonic_sensor.write_ultrasonic_bus(px.ultrasonic_sensor.read())
+        print(px.ultrasonic_bus.read(tag="hello!"))
     return
+
+
 
 
 if __name__ == "__main__":
