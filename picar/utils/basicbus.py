@@ -1,4 +1,4 @@
-#!/usr/bin/env/python3
+#!/usr/bin/env python3
 """
 basicbus.py
 Luke Strohbehn
@@ -14,12 +14,14 @@ class BasicBus:
 
     def write(self, message, tag: str = ""):
         with self.lock.gen_wlock():
-            print(f"{tag} has lock")
+            print(f"{tag} has write lock")
             self.message = message
-        print(f"{tag} let go of lock")
+        print(f"{tag} let go of write lock")
         return
 
-    def read(self):
+    def read(self, tag: str = ""):
         with self.lock.gen_rlock():
+            print(f"{tag} has read lock")
             message = self.message
+        print(f"{tag} let go of read lock")
         return message

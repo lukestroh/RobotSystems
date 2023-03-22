@@ -1,4 +1,4 @@
-#!/usr/bin/env/python3
+#!/usr/bin/env python3
 
 """
 interpret.py
@@ -105,7 +105,7 @@ class Interpreter:
 
     @log_on_error(logging.DEBUG, "Error reading the sensor bus.")
     def read_sensor_bus(self) -> dict:
-        self.bus_contents["grayscale"] = self.grayscale_bus.read()
+        self.bus_contents["grayscale"] = self.grayscale_bus.read(tag=self.name)
         # self.bus_contents["camera"] = self.camera_bus.read()
         return self.bus_contents
 

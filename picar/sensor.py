@@ -1,4 +1,4 @@
-#!/usr/bin/env/python3
+#!/usr/bin/env python3
 """
 sensors.py
 Luke Strohbehn
@@ -223,7 +223,7 @@ class UltrasonicSensor:
         self.echo = echo
         self.timeout = timeout
         self.ultrasonic_bus = px.ultrasonic_bus = UltrasonicBus()
-        self.run = px.run
+        self.name = "ultrasonic_sensor"
         return
 
     def _read(self) -> Union[int, float]:
@@ -254,12 +254,12 @@ class UltrasonicSensor:
                 return a
         return -1
 
-    def write_interpreter_bus(self, message: Any) -> None:
-        return self.interpreter_bus.write(message)
+    def write_ultrasonic_bus(self, message: Any) -> None:
+        return self.ultrasonic_bus.write(message, tag=self.name)
 
     def _run(self, time_delay: float) -> None:
         while self.px.run:
-            self.interpreter_bus.write(self.read())
+            self.write_ultasonic_bus(self.read())
             time.sleep(time_delay)
 
 

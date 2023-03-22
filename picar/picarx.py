@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import logging
 from logdecorator import log_on_start, log_on_end, log_on_error
 
@@ -131,7 +132,7 @@ class Picarx(object):
         # ultrasonic init
         # usage: distance = self.ultrasonic.read()
         tring, echo = ultrasonic_pins
-        self.ultrasonic = UltrasonicSensor(self, Pin(tring), Pin(echo))
+        self.ultrasonic_sensor = UltrasonicSensor(self, Pin(tring), Pin(echo))
 
         # Interpreter
         self.interpreter = Interpreter(self, light_idx=1000, dark_idx=500, polarity="light")
@@ -139,11 +140,11 @@ class Picarx(object):
         # Maneuver
         self.maneuver = Maneuver(self)
 
-        # Scheduler
-        self.scheduler = Scheduler(self)
-
         # Controller
         self.controller = Controller(self)
+
+        # Scheduler
+        self.scheduler = Scheduler(self)
 
         # at exit
         atexit.register(self.cleanup)

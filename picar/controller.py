@@ -1,31 +1,30 @@
-#!/usr/bin/env/python3
+#!/usr/bin/env python3
 
 from picar.utils.bus import InterpreterBus, UltrasonicBus
-
-from picar.picarx import Picar
 
 import time
 from typing import Any
 
 
 class Controller:
-    def __init__(self, px: Picar) -> None:
+    def __init__(self, px) -> None:
         self.control_data = {}
         self.interpreter_bus = px.interpreter_bus
         self.ultrasonic_bus = px.ultrasonic_bus
-        self.px: Picar = px
+        self.px = px
         self.car_speed = 40
 
         self.actions: dict = {
 
         }
+        self.name = "controller"
         return
 
     def read_interpreter_bus(self):
-        return self.interpreter_bus.read()
+        return self.interpreter_bus.read(tag=self.name)
 
     def read_ultrasonic_bus(self) -> Any:
-        return self.ultrasonic_bus.read()
+        return self.ultrasonic_bus.read(tag=self.name)
 
     def get_maneuver(self, user_input: str) -> None:
         user_command = self.px.COMMAND_DICT[user_input]
@@ -43,12 +42,16 @@ class Controller:
 
 
         while self.px.run:
+            # get ultrasonic data, maybe make loop more frequent? Or maybe the ultrasonic should have its own controller?
+            self.control_data["ultrasonic_data"] = self.read_ultrasonic_bus(self)
+            if self.control_data["ultrasonic_data"] < 10:
+                self.px.stop()
+
+
             # get interpreter data
             self.control_data["interpreter_data"] = self.read_interpreter_bus(self)
 
-            # get ultrasonic data, maybe make loop more frequent?
-            self.control_data["ultrasonic_data"] = self.read_ultrasonic_bus(self)
-
+            
 
             ##### Right now, the steering angle is being determined in Interpreter.py, which seems like the wrong place. 
             # Since the angle is calculated in the interpreter though, i'll need a system-wide variable that holds the task that we're doing?
